@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A0E78346-5441-4C86-A088-A08EC9488630}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FLPFileFormat</RootNamespace>
+    <AssemblyName>FLPFileFormat</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FLPE_Bytes.cs" />
+    <Compile Include="FLPE_Channel_Delay.cs" />
+    <Compile Include="FLPE_Channel_LevelOffsets.cs" />
+    <Compile Include="FLPE_Channel_Levels.cs" />
+    <Compile Include="FLPE_Channel_Poly.cs" />
+    <Compile Include="FLPE_Channel_Tracking.cs" />
+    <Compile Include="FLPE_Color.cs" />
+    <Compile Include="FLPE_Ctrl_Init_RecChan.cs" />
+    <Compile Include="FLPE_CutCutBy.cs" />
+    <Compile Include="FLPE_Data.cs" />
+    <Compile Include="FLPE_DelayFRes.cs" />
+    <Compile Include="FLPE_MixerTrack_Parameters.cs" />
+    <Compile Include="FLPE_Playlist_Track_Info.cs" />
+    <Compile Include="FLPE_MixerTrack_Routing.cs" />
+    <Compile Include="FLPE_Pattern_Ctrl_Events.cs" />
+    <Compile Include="FLPE_Pattern_Note_Events.cs" />
+    <Compile Include="FLPE_Playlist_Events.cs" />
+    <Compile Include="FLPE_Project_Time.cs" />
+    <Compile Include="FLPE_Unicode.cs" />
+    <Compile Include="FLPE_Val.cs" />
+    <Compile Include="FLPE_Values.cs" />
+    <Compile Include="FLP_Event.cs" />
+    <Compile Include="FLP_File.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

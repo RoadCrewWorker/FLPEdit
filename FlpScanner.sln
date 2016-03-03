@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FLPtoXML", "FlpScanner\FLPtoXML.csproj", "{DDEC88CB-B914-4BA6-9A83-17A038D6430E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FLPFileFormat", "FLPFileFormat\FLPFileFormat.csproj", "{A0E78346-5441-4C86-A088-A08EC9488630}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FLPEdit", "FLPEdit\FLPEdit.csproj", "{37569574-47C4-495D-8750-EE23CDB4F1BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropInspector", "DropInspector\DropInspector.csproj", "{7BA67621-006C-4904-B1E9-D5DB61C36338}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DDEC88CB-B914-4BA6-9A83-17A038D6430E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDEC88CB-B914-4BA6-9A83-17A038D6430E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDEC88CB-B914-4BA6-9A83-17A038D6430E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDEC88CB-B914-4BA6-9A83-17A038D6430E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0E78346-5441-4C86-A088-A08EC9488630}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0E78346-5441-4C86-A088-A08EC9488630}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0E78346-5441-4C86-A088-A08EC9488630}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0E78346-5441-4C86-A088-A08EC9488630}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37569574-47C4-495D-8750-EE23CDB4F1BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37569574-47C4-495D-8750-EE23CDB4F1BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37569574-47C4-495D-8750-EE23CDB4F1BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37569574-47C4-495D-8750-EE23CDB4F1BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BA67621-006C-4904-B1E9-D5DB61C36338}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BA67621-006C-4904-B1E9-D5DB61C36338}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BA67621-006C-4904-B1E9-D5DB61C36338}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BA67621-006C-4904-B1E9-D5DB61C36338}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

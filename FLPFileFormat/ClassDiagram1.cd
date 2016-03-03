@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="FLPFileFormat.FLP_Event">
+    <Position X="18" Y="0.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAQAAAAAAAACBAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>FLP_Event.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FLPFileFormat.FLP_File" Collapsed="true">
+    <Position X="41.25" Y="0.5" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="FLPFileFormat.FLP_File.FLP_Format" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>FLP_File.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="FLPFileFormat.FLP_File.EventID" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>FLP_File.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AOBAggBIAAEAEAAAAAAAgAgAQiBAAAAACAgAAQEAAQA=</HashCode>
+      <FileName>FLP_File.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FLPFileFormat.FLPE_Bytes">
+    <Position X="16.5" Y="6.5" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAgAAAAAAAAAAhAAAAAIAAAAAAA=</HashCode>
+      <FileName>FLPE_Bytes.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FLPFileFormat.FLPE_Color">
+    <Position X="36" Y="3.5" Width="2.5" />
+    <NestedTypes>
+      <Enum Name="FLPFileFormat.FLPE_Color.ValidIDs" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>FLPE_Color.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAgAEAAAAAAAAACBAABAAAAAAgRAAAAA=</HashCode>
+      <FileName>FLPE_Color.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FLPFileFormat.FLPE_Data">
+    <Position X="14.25" Y="3.5" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAQAgAAAAAACBAAgAAAAAAAAAAAAA=</HashCode>
+      <FileName>FLPE_Data.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FLPFileFormat.FLPE_MixerTrack_Routing">
+    <Position X="8.5" Y="6.5" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAAAEAAgACCAAAAAAAgAAAAAAQAAAAAA=</HashCode>
+      <FileName>FLPE_MixerTrack_Routing.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FLPFileFormat.FLPE_Pattern_Ctrl_Events">
+    <Position X="24.5" Y="6.5" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAEAAgAAACAAAIAAgAAAAAAAAAAAAA=</HashCode>
+      <FileName>FLPE_Pattern_Ctrl_Events.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FLPFileFormat.ControlEvent" Collapsed="true">
+    <Position X="39.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAkAAAAAAAAACBAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>FLPE_Pattern_Ctrl_Events.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FLPFileFormat.FLPE_Pattern_Note_Events">
+    <Position X="0.5" Y="6.5" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAwAAAAAAAAAAAEAAgAAAAAAAAEAgAAAAAAAAAAAAA=</HashCode>
+      <FileName>FLPE_Pattern_Note_Events.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FLPFileFormat.PatternNote" Collapsed="true">
+    <Position X="39.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAABAAgAAACAgYkDAAABAAAACBAAAAAACAAABAEAAA=</HashCode>
+      <FileName>FLPE_Pattern_Note_Events.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FLPFileFormat.FLPE_Playlist_Events">
+    <Position X="20.5" Y="6.5" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAFAAAAAAAAEAAgAABAAAAAAAgAAAAAAAAAAAAA=</HashCode>
+      <FileName>FLPE_Playlist_Events.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FLPFileFormat.PlaylistClip" Collapsed="true">
+    <Position X="41.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAEAABAACAAAgAAAAIAAAQCBAEIAAAgAQAEABAEA=</HashCode>
+      <FileName>FLPE_Playlist_Events.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FLPFileFormat.FLPE_Project_Time">
+    <Position X="4.5" Y="6.5" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAFAAgAAAAAAAgAAgAAAEAAAEAAAQA=</HashCode>
+      <FileName>FLPE_Project_Time.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FLPFileFormat.FLPE_Unicode">
+    <Position X="12.5" Y="6.5" Width="3.25" />
+    <NestedTypes>
+      <Enum Name="FLPFileFormat.FLPE_Unicode.ValidIDs" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>FLPE_Unicode.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAgAAAAAAAAAAgAAAAAACAAAAAA=</HashCode>
+      <FileName>FLPE_Unicode.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FLPFileFormat.FLPE_Val">
+    <Position X="32.5" Y="3.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAAAAAEQAAAAAAAACBAAAAAAAAoAAAAAAA=</HashCode>
+      <FileName>FLPE_Val.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FLPFileFormat.FLPE_Values">
+    <Position X="28.5" Y="6.5" Width="3.25" />
+    <NestedTypes>
+      <Enum Name="FLPFileFormat.FLPE_Values.ValidIDs" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>FLPE_Values.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAEAAgAAAQAAAAAAgAAAAAgAAAAAAA=</HashCode>
+      <FileName>FLPE_Values.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
