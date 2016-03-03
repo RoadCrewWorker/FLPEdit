@@ -124,11 +124,6 @@ namespace FLPEdit
             }
         }
 
-        private void quitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void flpPropertyGrid_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             if (e.KeyCode == Keys.F5)
@@ -164,13 +159,18 @@ namespace FLPEdit
         private void resetToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.CurrentFLPFile.RemoveMixer();
-            LogStatusMessage("Removed unused patterns.");
+            LogStatusMessage("Removed mixer entities.");
         }
 
         private void showInInspectorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.flpPropertyGrid.SelectedObject = this.CurrentFLPFile;
             this.flpPropertyGrid.Enabled = true;
+        }
+
+        private void resetEmptyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

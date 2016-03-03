@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace FLPXML
 {
+    /*
+        Currently unused structure to store a FL project.
+    */
     public class FL_Project
     {
         //Project Members
@@ -110,6 +114,7 @@ namespace FLPXML
 
         public void Deserizalize(BinaryReader r)
         {
+            throw new NotImplementedException(); //TODO
         }
     }
 }

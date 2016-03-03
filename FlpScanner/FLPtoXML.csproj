@@ -33,7 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>FlpScanner.Program</StartupObject>
+    <StartupObject>FLPXML.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FLPFileFormat", "FLPFileFor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FLPEdit", "FLPEdit\FLPEdit.csproj", "{37569574-47C4-495D-8750-EE23CDB4F1BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropInspector", "DropInspector\DropInspector.csproj", "{7BA67621-006C-4904-B1E9-D5DB61C36338}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{37569574-47C4-495D-8750-EE23CDB4F1BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37569574-47C4-495D-8750-EE23CDB4F1BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37569574-47C4-495D-8750-EE23CDB4F1BC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7BA67621-006C-4904-B1E9-D5DB61C36338}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7BA67621-006C-4904-B1E9-D5DB61C36338}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7BA67621-006C-4904-B1E9-D5DB61C36338}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7BA67621-006C-4904-B1E9-D5DB61C36338}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

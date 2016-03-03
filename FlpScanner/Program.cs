@@ -13,11 +13,11 @@ namespace FLPXML
         {
             if (args.Length < 1)
             {
+                //TODO: behavior not yet implemented.
                 Console.WriteLine("Usage: FLP-XML.exe <FLP, XML or Dir> [action, action, action ...] \nwhere action:"
                     + "\n-rup : Remove Unusued Patterns"
                     + "\n-clean : Remove redundant default values"
-                    + "\n-xml : Export to XML"
-                    + "\n-xmlfull : Export to XML (includes all default values)-");
+                    + "\n-xml : Export to XML");
                 return;
             }
             string filename = args[0];
@@ -63,9 +63,10 @@ namespace FLPXML
             }
 
         }
+
         private static void ProcessFLPFile(FLP_File f, string[] cmds)
         {
-
+            throw new NotImplementedException(); //TODO
         }
     }
 }
