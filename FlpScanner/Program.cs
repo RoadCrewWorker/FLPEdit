@@ -24,7 +24,7 @@ namespace FLPXML
 
             if (filename.EndsWith(".flp"))
             {
-                FLP_File flp = new FLP_File(filename);
+                FLP_File flp = new FLP_File(filename, null);
 
                 // Perform various options here:
 

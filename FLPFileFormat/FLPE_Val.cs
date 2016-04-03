@@ -37,7 +37,6 @@ namespace FLPFileFormat
             }
         }
 
-
         //Rekursive Factory Method for fixed length values (1,2,4 bytes)
         public static new FLP_Event FromEventID(FLP_File.EventID id)
         {
@@ -45,7 +44,10 @@ namespace FLPFileFormat
             if (id == FLP_File.EventID.ID_Channel_Delay_ModXYChange) return new FLPE_DelayFRes(id);
             if (Enum.IsDefined(typeof(FLPE_Color.ValidIDs), (byte)id)) return new FLPE_Color(id);
             int bytelength = id < (FLP_File.EventID)FLP_File.FLP_Word ? 1 : id < (FLP_File.EventID)FLP_File.FLP_Int ? 2 : 4;
-            return new FLPE_Val(id, bytelength);
+           //if (Enum.IsDefined(typeof(FLPE_Val.ValidIDs), (byte)id))
+                return new FLPE_Val(id, bytelength);
+           //else
+           //   throw new InvalidDataException(id + " is not a valid ID.");
         }
 
         public FLPE_Val(FLP_File.EventID type, int bytelength) : base(type) { this.B = bytelength; }

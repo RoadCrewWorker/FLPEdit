@@ -59,6 +59,7 @@
             this.saveFLPFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.saveXMLFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.flpPropertyGrid = new System.Windows.Forms.PropertyGrid();
+            this.removeFL123EventsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
@@ -146,7 +147,7 @@
             // deleteUnusedToolStripMenuItem
             // 
             this.deleteUnusedToolStripMenuItem.Name = "deleteUnusedToolStripMenuItem";
-            this.deleteUnusedToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.deleteUnusedToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.deleteUnusedToolStripMenuItem.Text = "Delete Unused";
             this.deleteUnusedToolStripMenuItem.Click += new System.EventHandler(this.deleteUnusedToolStripMenuItem_Click);
             // 
@@ -158,7 +159,7 @@
             this.usesToolStripMenuItem});
             this.reorderByToolStripMenuItem.Enabled = false;
             this.reorderByToolStripMenuItem.Name = "reorderByToolStripMenuItem";
-            this.reorderByToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.reorderByToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.reorderByToolStripMenuItem.Text = "Reorder by";
             // 
             // rackChannelToolStripMenuItem
@@ -199,7 +200,7 @@
             // 
             this.resetEmptyToolStripMenuItem.Enabled = false;
             this.resetEmptyToolStripMenuItem.Name = "resetEmptyToolStripMenuItem";
-            this.resetEmptyToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.resetEmptyToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.resetEmptyToolStripMenuItem.Text = "Reset Empty";
             this.resetEmptyToolStripMenuItem.Click += new System.EventHandler(this.resetEmptyToolStripMenuItem_Click);
             // 
@@ -209,7 +210,7 @@
             this.sourceChannelToolStripMenuItem});
             this.reorderByToolStripMenuItem1.Enabled = false;
             this.reorderByToolStripMenuItem1.Name = "reorderByToolStripMenuItem1";
-            this.reorderByToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.reorderByToolStripMenuItem1.Size = new System.Drawing.Size(139, 22);
             this.reorderByToolStripMenuItem1.Text = "Reorder by";
             // 
             // sourceChannelToolStripMenuItem
@@ -231,21 +232,22 @@
             // 
             this.exportAsFstToolStripMenuItem.Enabled = false;
             this.exportAsFstToolStripMenuItem.Name = "exportAsFstToolStripMenuItem";
-            this.exportAsFstToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportAsFstToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
             this.exportAsFstToolStripMenuItem.Text = "Export as fst";
             this.exportAsFstToolStripMenuItem.Click += new System.EventHandler(this.exportAsFstToolStripMenuItem_Click);
             // 
             // resetToolStripMenuItem
             // 
             this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
-            this.resetToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.resetToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
             this.resetToolStripMenuItem.Text = "Reset";
             this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
             // 
             // fileToolStripMenuItem1
             // 
             this.fileToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.removeDefaultEntriesToolStripMenuItem});
+            this.removeDefaultEntriesToolStripMenuItem,
+            this.removeFL123EventsToolStripMenuItem});
             this.fileToolStripMenuItem1.Name = "fileToolStripMenuItem1";
             this.fileToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.fileToolStripMenuItem1.Text = "File";
@@ -306,6 +308,13 @@
             this.flpPropertyGrid.TabIndex = 2;
             this.flpPropertyGrid.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.flpPropertyGrid_PreviewKeyDown);
             // 
+            // removeFL123EventsToolStripMenuItem
+            // 
+            this.removeFL123EventsToolStripMenuItem.Name = "removeFL123EventsToolStripMenuItem";
+            this.removeFL123EventsToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.removeFL123EventsToolStripMenuItem.Text = "Remove FL12.3 Events";
+            this.removeFL123EventsToolStripMenuItem.Click += new System.EventHandler(this.removeFL123EventsToolStripMenuItem_Click);
+            // 
             // FLPEditForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -359,6 +368,7 @@
         private System.Windows.Forms.ToolStripMenuItem sourceChannelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showInInspectorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem removeFL123EventsToolStripMenuItem;
     }
 }
 

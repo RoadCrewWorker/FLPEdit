@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Xml.Serialization;
 /*
     Deserialization based on 
@@ -75,6 +76,7 @@ namespace FLPFileFormat
             ID_Channel_Enabled = 0,
             ID_Channel_Type = 21,
             ID_Channel_MixerTrack_Target = 22,
+            FL12_3_Channel_LockedMidiController = 32,
 
             ID_Channel_SampleFileName = FLP_Text + 4,
             ID_Channel_Envelope = FLP_Text + 26, // TODO: Channel Envelope - 17 DWORDs, reverse ADSR/LFO fields
@@ -139,6 +141,7 @@ namespace FLPFileFormat
             ID_MixerTrack_Name = FLP_Text + 12, // FX track name
             ID_MixerTrack_Routing = FLP_Text + 43,
             ID_MixerTrack_Parameters = FLP_Text + 44,
+            FL12_3_MixerTrack_Unknown = FLP_Word + 34,
 
             //BYTE
             FLP_NoteOn = 1,                // +pos
@@ -209,6 +212,7 @@ namespace FLPFileFormat
             OBS_DelayLine = FLP_Text + 19, // obsolete
             OBS_Reserved2 = FLP_Text + 22 // used once for testing
         }
+
 
 
         /*
@@ -289,14 +293,14 @@ namespace FLPFileFormat
         {
             //Empty constructor for XMLSerialization
         }
-        public FLP_File(string filename)
+        public FLP_File(string filename, TextWriter logger)
         {
             BinaryReader r = new BinaryReader(File.OpenRead(filename));
-            this.Deserialize(r);
+            this.Deserialize(r, logger);
             r.Close();
         }
 
-        public void Deserialize(BinaryReader r)
+        public void Deserialize(BinaryReader r, TextWriter logger)
         {
             //01. read header
             this.FLPHeaderChunkID = r.ReadChars(4); //"FLhd" FL header
@@ -316,6 +320,7 @@ namespace FLPFileFormat
                 try
                 {
                     next_event = FLP_Event.FromEventID((FLP_File.EventID)r.ReadByte());
+                    if(logger!=null) logger.WriteLine((p/1024) + "kb = " + next_event.Id);
                     if (next_event != null)
                     {
                         next_event.Deserialize(r);
@@ -323,7 +328,7 @@ namespace FLPFileFormat
                     }
                 }
                 catch (Exception e)
-                {
+                {   
                     next_event = null;
                 }
             }
@@ -416,6 +421,12 @@ namespace FLPFileFormat
                     _events.Remove(n);
                     */
             return mixer;
+        }
+
+        public void RemoveFL123Events()
+        {
+            foreach (FLP_Event n in this.GetEventsWithIDs(EventID.FL12_3_Channel_LockedMidiController, EventID.FL12_3_MixerTrack_Unknown))
+                _events.Remove(n);
         }
 
         public void RemoveMixer()

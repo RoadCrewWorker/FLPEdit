@@ -49,14 +49,15 @@ namespace FLPEdit
         private void LoadAndShowFLPFile(string filename)
         {
             //Load
+            TextWriter loggy = File.CreateText(filename + ".log");
             DateTime t1 = DateTime.Now;
             if (filename.EndsWith(".flp"))
             {
-                this.CurrentFLPFile = new FLP_File(filename);
+                this.CurrentFLPFile = new FLP_File(filename,loggy);
             }
             else if(filename.EndsWith(".fst"))
             {
-                this.CurrentFLPFile = new FLP_File(filename);
+                this.CurrentFLPFile = new FLP_File(filename, loggy);
             }
             else if (filename.EndsWith(".xml"))
             {
@@ -66,6 +67,7 @@ namespace FLPEdit
                     this.CurrentFLPFile = (FLP_File)serializer.Deserialize(stream);
                 }
             }
+            loggy.Close();
             DateTime t2 = DateTime.Now;
         }
 
@@ -171,6 +173,12 @@ namespace FLPEdit
         private void resetEmptyToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void removeFL123EventsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CurrentFLPFile.RemoveFL123Events();
+            LogStatusMessage("Removed redundant default events.");
         }
     }
 }

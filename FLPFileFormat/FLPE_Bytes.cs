@@ -12,7 +12,6 @@ namespace FLPFileFormat
     [Serializable]
     public class FLPE_Bytes : FLPE_Data
     {
-
         [XmlAttribute]
         public int Bytes
         {

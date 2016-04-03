@@ -11,6 +11,7 @@ namespace FLPFileFormat
     [Serializable]
     public abstract class FLPE_Data : FLP_Event
     {
+
         //Rekursive Factory Method, propagates to further subclasses depending on ID
         public static new FLP_Event FromEventID(FLP_File.EventID id)
         {
@@ -35,7 +36,10 @@ namespace FLPFileFormat
             if (Enum.IsDefined(typeof(FLPE_Unicode.ValidIDs), (byte)id)) return new FLPE_Unicode(id);
             if (Enum.IsDefined(typeof(FLPE_Values.ValidIDs), (byte)id)) return new FLPE_Values(id);
             //Default fallback class
-            return new FLPE_Bytes(id);
+            //if (Enum.IsDefined(typeof(FLPE_Bytes.ValidIDs), (byte)id))
+                return new FLPE_Bytes(id);
+            //else
+            //    throw new InvalidDataException(id + " is not a valid DATA ID.");
         }
 
         public FLPE_Data(FLP_File.EventID type) : base(type) { }
