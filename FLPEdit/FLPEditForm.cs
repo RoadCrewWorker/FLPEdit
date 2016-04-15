@@ -15,7 +15,7 @@ namespace FLPEdit
 
         private void LogStatusMessage(string message)
         {
-            this.toolStripStatusLabel1.Text = DateTime.Now.ToString() + " " + message;
+            this.LogOutput.Text += "\n" + DateTime.Now.ToString() + " " + message;
         }
 
         public FLPEditForm()
@@ -179,6 +179,13 @@ namespace FLPEdit
         {
             CurrentFLPFile.RemoveFL123Events();
             LogStatusMessage("Removed redundant default events.");
+        }
+
+        private void showEventStatisticsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string info = CurrentFLPFile.GetEventStatistics();
+            this.LogOutput.Text += "\n" + info;
+       
         }
     }
 }

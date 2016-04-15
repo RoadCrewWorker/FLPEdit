@@ -52,6 +52,7 @@
             this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.removeDefaultEntriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeFL123EventsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -59,7 +60,8 @@
             this.saveFLPFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.saveXMLFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.flpPropertyGrid = new System.Windows.Forms.PropertyGrid();
-            this.removeFL123EventsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showEventStatisticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.LogOutput = new System.Windows.Forms.RichTextBox();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
@@ -72,7 +74,7 @@
             this.reloadToolStripMenuItem});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
-            this.mainMenuStrip.Size = new System.Drawing.Size(708, 24);
+            this.mainMenuStrip.Size = new System.Drawing.Size(668, 24);
             this.mainMenuStrip.TabIndex = 0;
             this.mainMenuStrip.Text = "menuStrip1";
             // 
@@ -247,7 +249,8 @@
             // 
             this.fileToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.removeDefaultEntriesToolStripMenuItem,
-            this.removeFL123EventsToolStripMenuItem});
+            this.removeFL123EventsToolStripMenuItem,
+            this.showEventStatisticsToolStripMenuItem});
             this.fileToolStripMenuItem1.Name = "fileToolStripMenuItem1";
             this.fileToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.fileToolStripMenuItem1.Text = "File";
@@ -258,6 +261,13 @@
             this.removeDefaultEntriesToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
             this.removeDefaultEntriesToolStripMenuItem.Text = "Remove Default Entries";
             this.removeDefaultEntriesToolStripMenuItem.Click += new System.EventHandler(this.removeDefaultEntriesToolStripMenuItem_Click);
+            // 
+            // removeFL123EventsToolStripMenuItem
+            // 
+            this.removeFL123EventsToolStripMenuItem.Name = "removeFL123EventsToolStripMenuItem";
+            this.removeFL123EventsToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.removeFL123EventsToolStripMenuItem.Text = "Remove FL12.3 Events";
+            this.removeFL123EventsToolStripMenuItem.Click += new System.EventHandler(this.removeFL123EventsToolStripMenuItem_Click);
             // 
             // reloadToolStripMenuItem
             // 
@@ -271,9 +281,9 @@
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip.Location = new System.Drawing.Point(0, 418);
+            this.statusStrip.Location = new System.Drawing.Point(0, 641);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(708, 22);
+            this.statusStrip.Size = new System.Drawing.Size(668, 22);
             this.statusStrip.TabIndex = 1;
             this.statusStrip.Text = "statusStrip1";
             // 
@@ -304,25 +314,35 @@
             this.flpPropertyGrid.Enabled = false;
             this.flpPropertyGrid.Location = new System.Drawing.Point(0, 24);
             this.flpPropertyGrid.Name = "flpPropertyGrid";
-            this.flpPropertyGrid.Size = new System.Drawing.Size(708, 394);
+            this.flpPropertyGrid.Size = new System.Drawing.Size(668, 521);
             this.flpPropertyGrid.TabIndex = 2;
             this.flpPropertyGrid.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.flpPropertyGrid_PreviewKeyDown);
             // 
-            // removeFL123EventsToolStripMenuItem
+            // showEventStatisticsToolStripMenuItem
             // 
-            this.removeFL123EventsToolStripMenuItem.Name = "removeFL123EventsToolStripMenuItem";
-            this.removeFL123EventsToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
-            this.removeFL123EventsToolStripMenuItem.Text = "Remove FL12.3 Events";
-            this.removeFL123EventsToolStripMenuItem.Click += new System.EventHandler(this.removeFL123EventsToolStripMenuItem_Click);
+            this.showEventStatisticsToolStripMenuItem.Name = "showEventStatisticsToolStripMenuItem";
+            this.showEventStatisticsToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.showEventStatisticsToolStripMenuItem.Text = "Show Event Statistics";
+            this.showEventStatisticsToolStripMenuItem.Click += new System.EventHandler(this.showEventStatisticsToolStripMenuItem_Click);
+            // 
+            // LogOutput
+            // 
+            this.LogOutput.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.LogOutput.Location = new System.Drawing.Point(0, 545);
+            this.LogOutput.Name = "LogOutput";
+            this.LogOutput.Size = new System.Drawing.Size(668, 96);
+            this.LogOutput.TabIndex = 3;
+            this.LogOutput.Text = "";
             // 
             // FLPEditForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(708, 440);
+            this.ClientSize = new System.Drawing.Size(668, 663);
             this.Controls.Add(this.flpPropertyGrid);
-            this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.mainMenuStrip);
+            this.Controls.Add(this.LogOutput);
+            this.Controls.Add(this.statusStrip);
             this.MainMenuStrip = this.mainMenuStrip;
             this.Name = "FLPEditForm";
             this.Text = "FLP Edit";
@@ -369,6 +389,8 @@
         private System.Windows.Forms.ToolStripMenuItem resetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showInInspectorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeFL123EventsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showEventStatisticsToolStripMenuItem;
+        private System.Windows.Forms.RichTextBox LogOutput;
     }
 }
 

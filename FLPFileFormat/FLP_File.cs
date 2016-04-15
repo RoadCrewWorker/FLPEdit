@@ -213,6 +213,37 @@ namespace FLPFileFormat
             OBS_Reserved2 = FLP_Text + 22 // used once for testing
         }
 
+        public string GetEventStatistics()
+        {
+            Dictionary<EventID, int[]> hist = new Dictionary<EventID, int[]>();
+
+            for (int event_index = 0; event_index < this._events.Count; event_index++)
+            {
+            }
+            int totalsize = 0;
+            foreach (FLP_Event e in this.Events)
+            {
+                if (!hist.ContainsKey(e.Id)) hist.Add(e.Id, new int[2]);
+                int[] d = hist[e.Id];
+                d[0]++;
+                MemoryStream temp_stream = new MemoryStream();
+                BinaryWriter temp_writer = new BinaryWriter(temp_stream);
+                e.Serialize(temp_writer);
+                temp_writer.Close();
+                byte[] data = temp_stream.ToArray();
+                d[1] += data.Length;
+                totalsize+= data.Length;
+            }
+
+            string r = "";
+            foreach(EventID id in hist.Keys)
+            {
+                int[] d = hist[id];
+                r += Math.Round(d[1]*100.0/totalsize,3)+"%\t" + d[0] +"x "+ id +   "\t" + Math.Round(d[1]*1.00 / 1024, 3) + " kb\n";
+            }
+            return r;
+        }
+
 
 
         /*
