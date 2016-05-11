@@ -9,46 +9,44 @@ namespace FLPXML
 {
     class Program
     {
+        public static void Log(string f)
+        {
+            Console.WriteLine(DateTime.Now + ": " + f);
+        }
+
         static void Main(string[] args)
         {
             if (args.Length < 1)
             {
-                //TODO: behavior not yet implemented.
                 Console.WriteLine("Usage: FLP-XML.exe <FLP, XML or Dir> [action, action, action ...] \nwhere action:"
                     + "\n-rup : Remove Unusued Patterns"
                     + "\n-clean : Remove redundant default values"
-                    + "\n-xml : Export to XML");
+                    + "\n-12.2 : Remove 12.3 beta data"
+                    + "\n-store : Store as FLP"
+                    + "\n-xml : Export to XML"
+                    + "\nExample: -clean -12.2 -store"
+                    + "\nExample: -rup -store -clean -xml");
                 return;
             }
             string filename = args[0];
+            Log(filename);
+            Log(Directory.Exists(filename)?"True":"False");
 
             if (filename.EndsWith(".flp"))
             {
                 FLP_File flp = new FLP_File(filename, null);
-
-                // Perform various options here:
-
-
-                XmlSerializer xmlserializer = new XmlSerializer(typeof(FLP_File));
-
-                XmlWriterSettings settings = new XmlWriterSettings();
-                settings.Encoding = new UnicodeEncoding(false, false);
-                settings.NewLineChars = "\n";
-                settings.Indent = true;
-                settings.OmitXmlDeclaration = false;
-
-                using (StringWriter textWriter = new StringWriter())
-                {
-                    using (XmlWriter xmlWriter = XmlWriter.Create(textWriter, settings))
-                    {
-                        xmlserializer.Serialize(xmlWriter, flp);
-                        File.WriteAllText(filename + ".xml", textWriter.ToString(), Encoding.Unicode);
-                    }
-                }
+                ProcessFLPFile(flp, filename, args);
             }
             else if (Directory.Exists(filename))
             {
-
+                foreach (string fn in Directory.EnumerateFiles(filename))
+                {
+                    if (fn.EndsWith(".flp"))
+                    {
+                        FLP_File flp = new FLP_File(fn, null);
+                        ProcessFLPFile(flp, fn, args);
+                    }
+                }
             }
             else if (filename.EndsWith(".xml"))
             {
@@ -64,9 +62,59 @@ namespace FLPXML
 
         }
 
-        private static void ProcessFLPFile(FLP_File f, string[] cmds)
+        private static void ProcessFLPFile(FLP_File f, string filename, string[] cmds)
         {
-            throw new NotImplementedException(); //TODO
+            foreach (string cmd in cmds)
+            {
+                if (cmd == "-rup")
+                {
+                    Log("Removing unused patterns from " + filename);
+                    int c_pre = f.Events.Length;
+                    f.RemoveUnusuedPatterns();
+                    Log("Done. " + c_pre + "->" + f.Events.Length);
+                }
+                if (cmd == "-clean")
+                {
+                    Log("Removing redundant events from " + filename);
+                    int c_pre = f.Events.Length;
+                    f.RemoveRedundantEvents();
+                    Log("Done. " + c_pre + "->" + f.Events.Length);
+                }
+                if (cmd == "-12.2")
+                {
+                    Log("Removing 12.3 exclusive events from " + filename);
+                    int c_pre = f.Events.Length;
+                    f.RemoveFL123Events();
+                    Log("Done. " + c_pre + "->" + f.Events.Length);
+                }
+                if (cmd == "-store")
+                {
+                    Log("Storing " + filename);
+                    BinaryWriter w = new BinaryWriter(File.OpenWrite(filename + "_out.flp"));
+                    f.Serialize(w);
+                    w.Close();
+                    Log("Stored to: " + filename + "_out.flp");
+                }
+                if (cmd == "-xml")
+                {
+                    XmlSerializer xmlserializer = new XmlSerializer(typeof(FLP_File));
+
+                    XmlWriterSettings settings = new XmlWriterSettings();
+                    settings.Encoding = new UnicodeEncoding(false, false);
+                    settings.NewLineChars = "\n";
+                    settings.Indent = true;
+                    settings.OmitXmlDeclaration = false;
+
+                    using (StringWriter textWriter = new StringWriter())
+                    {
+                        using (XmlWriter xmlWriter = XmlWriter.Create(textWriter, settings))
+                        {
+                            xmlserializer.Serialize(xmlWriter, f);
+                            File.WriteAllText(filename + ".xml", textWriter.ToString(), Encoding.Unicode);
+                        }
+                    }
+                }
+            }
         }
     }
 }

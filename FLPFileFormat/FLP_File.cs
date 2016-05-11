@@ -348,6 +348,7 @@ namespace FLPFileFormat
             do
             {
                 long p = r.BaseStream.Position;
+                if (p == r.BaseStream.Length) break;
                 try
                 {
                     next_event = FLP_Event.FromEventID((FLP_File.EventID)r.ReadByte());
@@ -359,11 +360,17 @@ namespace FLPFileFormat
                     }
                 }
                 catch (Exception e)
-                {   
-                    next_event = null;
+                {
+                    Console.WriteLine(e.ToString()); //TODO ADD handling for this, proper error output/logging
+                    next_event = null; //This causes the deserialization to abort since we've likely lost event sync.
                 }
             }
             while (next_event != null);
+
+            if (r.BaseStream.Position < r.BaseStream.Length)
+            {
+                throw new InvalidDataException("FLP Deserialization incomplete: " + r.BaseStream.Position + "<" + r.BaseStream.Length);
+            }
         }
 
         public void Serialize(BinaryWriter w)

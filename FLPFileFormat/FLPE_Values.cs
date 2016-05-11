@@ -18,7 +18,7 @@ namespace FLPFileFormat
         public enum ValidIDs : byte
         {
             //ID_Plugin_New = FLP_Text + 20, // new VST or DirectX plugin
-            ID_Channel_Parameters = FLP_Text + 23, // block of various channel params (can grow)
+            //ID_Channel_Parameters = FLP_Text + 23,  block of various channel params (can grow) And DID grow, now not divisible by 4 anymore
             ID_Channel_Envelope = FLP_Text + 26,
             FLP_Ctrl_Remote_MIDI = FLP_Text + 34, // remote control entry (MIDI)
             FLP_Ctrl_Remote_Internal = FLP_Text + 35 // remote control entry (internal)
