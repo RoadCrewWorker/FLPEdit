@@ -179,6 +179,7 @@ namespace FLPFileFormat
             FLP_FineTune = FLP_Int + 14,
             FLP_SongLoopPos = FLP_Int + 24,
             FLP_AUSmpRate = FLP_Int + 25,
+            FL12_5_Unknown = FLP_Int + 29,
 
             // Variable size (192..255)
             //FLP_Undef = 192,               // +Length (VarLengthInt)
@@ -304,6 +305,7 @@ namespace FLPFileFormat
                 _events = new List<FLP_Event>(value);
             }
         }
+        public int EventCount {  get { return this._events.Count; } }
 
         [XmlAttribute]
         public char[] FLPHeaderChunkID { get; set; }
@@ -352,7 +354,7 @@ namespace FLPFileFormat
                 try
                 {
                     next_event = FLP_Event.FromEventID((FLP_File.EventID)r.ReadByte());
-                    if(logger!=null) logger.WriteLine((p/1024) + "kb = " + next_event.Id);
+                    if(logger!=null) logger.WriteLine((p) + " B = " + next_event.Id);
                     if (next_event != null)
                     {
                         next_event.Deserialize(r);
@@ -416,30 +418,42 @@ namespace FLPFileFormat
             return _events.FindAll(delegate (FLP_Event e) { return Array.IndexOf(ids,e.Id)!=-1; });
         }
 
-        public void RemoveUnusuedPatterns()
+        // This is now part of Fl 12.5! This is still useful for batching though
+        public void RemoveUnusuedPatterns(bool verbose=false)
         {
             //1. Identify used patterns:
             HashSet<int> used_pattern_ids = new HashSet<int>();
             List<FLP_Event> playlists = this.GetEventsWithIDs(EventID.ID_Playlist_Events);
 
+            if (verbose) Console.WriteLine("Discovering pattern usage...");
             foreach (FLPE_Playlist_Events pl in playlists)
             {
+                if (verbose) Console.WriteLine("in playlist: " + pl.ToString());
                 foreach (PlaylistClip c in pl.PlaylistItems)
                 {
                     int pid = c.ClipSource - c.PatternClipOffset;
-                    if (pid > 0 && !used_pattern_ids.Contains(pid)) //>=0?
+                    if (pid > 0 && !used_pattern_ids.Contains(pid))
+                    { //>=0?
+                        if (verbose) Console.WriteLine("Found used pattern with ID " + pid + " in " + c.ToString());
                         used_pattern_ids.Add(pid);
+                    }
                 }
             }
 
             //2. Select pattern related events
             foreach (FLP_Event n in this.GetEventsWithIDs(EventID.ID_Pattern_Color, EventID.ID_Pattern_Name, EventID.ID_Pattern_Note_Events, EventID.ID_Pattern_Ctrl_Events))
                 if (!used_pattern_ids.Contains(((FLPE_Val)this.Seek(n, EventID.ID_Pattern_New, false)).V))
+                {
+                    if (verbose) Console.WriteLine("Removing pattern event: "+n.ToString());
                     _events.Remove(n);
+                }
             //3. Finally remove unused Pattern headers.
             foreach (FLPE_Val n in this.GetEventsWithIDs(EventID.ID_Pattern_New))
                 if (!used_pattern_ids.Contains(n.V))
+                {
+                    if (verbose) Console.WriteLine("Removing pattern header: " + n.ToString());
                     _events.Remove(n);
+                }
         }
 
         public FLP_File ExtractMixer()
@@ -461,15 +475,75 @@ namespace FLPFileFormat
             return mixer;
         }
 
-        public void RemoveFL123Events()
+        public void RemoveFL125Events(bool verbose = false)
+        {
+            foreach (FLP_Event n in this.GetEventsWithIDs(EventID.FL12_5_Unknown))
+            {
+                if (verbose) Console.WriteLine("Removing event: " + n.ToString());
+                _events.Remove(n);
+            }
+        } 
+        public void RemoveFL123Events(bool verbose=false)
         {
             foreach (FLP_Event n in this.GetEventsWithIDs(EventID.FL12_3_Channel_LockedMidiController, EventID.FL12_3_MixerTrack_Unknown))
+            {
+                if (verbose) Console.WriteLine("Removing event: " + n.ToString());
                 _events.Remove(n);
+            }
         }
 
         public void RemoveMixer()
         {
             throw new NotImplementedException();
+        }
+        
+        public void PropagatePatternsToRackChannels()
+        {
+            //Step 1: For each generator:
+            foreach (FLP_Event e_newchannel in this.GetEventsWithIDs(EventID.ID_Channel_New))
+            {
+                int channel = ((FLPE_Val)e_newchannel).V;
+
+                foreach (FLP_Event pattern_notes in this.GetEventsWithIDs(EventID.ID_Pattern_Note_Events))
+                {
+                    ushort[] rc = ((FLPE_Pattern_Note_Events)pattern_notes).GetRackChannels();
+                    if (rc.Length != 1 || rc[0] != channel) continue;
+                    
+                    int p_index = ((FLPE_Val)this.Seek(pattern_notes, EventID.ID_Pattern_New, false)).V;
+                    FLPE_Unicode p_name = (FLPE_Unicode)this.Seek(e_newchannel, EventID.ID_Plugin_Name, true);
+                    foreach (FLPE_Unicode e_pattern_name in this.GetEventsWithIDs(EventID.ID_Pattern_Name))
+                    {
+                        int namep_index = ((FLPE_Val)this.Seek(e_pattern_name, EventID.ID_Pattern_New, false)).V;
+                        if (namep_index == p_index)
+                        {
+                            p_name.Text = e_pattern_name.Text;
+                            break;
+                        }
+                    }
+
+                    FLPE_Color p_color = (FLPE_Color)this.Seek(e_newchannel, EventID.ID_Plugin_Color, true);
+                    foreach (FLPE_Color e_pattern_color in this.GetEventsWithIDs(EventID.ID_Pattern_Color))
+                    {
+                        int namep_index = ((FLPE_Val)this.Seek(e_pattern_color, EventID.ID_Pattern_New, false)).V;
+                        if (namep_index == p_index)
+                        {
+                            p_color.HexColor = e_pattern_color.HexColor;
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        public void PropagateRackChannelToMixerTracks()
+        {
+            /*
+	            ID_Channel_MixerTrack_Target
+	            ->ID_Channel_New ->ID_Plugin_Name / ID_Plugin_Color
+	            indexing into mixer tracks how?
+            */
         }
     }
 }

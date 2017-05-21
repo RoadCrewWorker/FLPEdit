@@ -159,5 +159,9 @@ namespace FLPFileFormat
             w.Write(this.WindowStart);
             w.Write(this.WindowEnd);
         }
+        public override string ToString()
+        {
+            return "PlaylistClip @" + this.Position + " for " + this.Duration + " in Track " + (200-this.PlaylistTrack) + " Source:" + this.ClipSource;
+        }
     }
 }

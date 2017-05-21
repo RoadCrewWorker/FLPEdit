@@ -49,7 +49,7 @@ namespace FLPFileFormat
 
         public override string ToString()
         {
-            return Id + " = " + this._notes.Count + " Notes";
+            return Id + " = " + this._notes.Count + " Notes" + String.Join<ushort>(",", this.GetRackChannels());
         }
 
         public override void DeserializeData(int len, BinaryReader r)
@@ -63,6 +63,17 @@ namespace FLPFileFormat
                 n.Deserialize(r);
                 this._notes.Add(n);
             }
+        }
+        public ushort[] GetRackChannels()
+        {
+            HashSet<ushort> channels = new HashSet<ushort>();
+            foreach(PatternNote n in this._notes)
+            {
+                if (!channels.Contains(n.RackChannel)) channels.Add(n.RackChannel);
+            }
+            ushort[] r = new ushort[channels.Count];
+            channels.CopyTo(r);
+            return r;
         }
 
         public override void SerializeData(BinaryWriter w)

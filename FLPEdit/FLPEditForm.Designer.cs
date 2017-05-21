@@ -53,6 +53,9 @@
             this.fileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.removeDefaultEntriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeFL123EventsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showEventStatisticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.normalizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.patternToRackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -60,8 +63,8 @@
             this.saveFLPFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.saveXMLFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.flpPropertyGrid = new System.Windows.Forms.PropertyGrid();
-            this.showEventStatisticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.LogOutput = new System.Windows.Forms.RichTextBox();
+            this.removeFL125EventsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
@@ -132,7 +135,8 @@
             this.channelsToolStripMenuItem,
             this.playlistToolStripMenuItem,
             this.mixerToolStripMenuItem,
-            this.fileToolStripMenuItem1});
+            this.fileToolStripMenuItem1,
+            this.normalizeToolStripMenuItem});
             this.scriptsToolStripMenuItem.Name = "scriptsToolStripMenuItem";
             this.scriptsToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
             this.scriptsToolStripMenuItem.Text = "Scripts";
@@ -250,7 +254,8 @@
             this.fileToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.removeDefaultEntriesToolStripMenuItem,
             this.removeFL123EventsToolStripMenuItem,
-            this.showEventStatisticsToolStripMenuItem});
+            this.showEventStatisticsToolStripMenuItem,
+            this.removeFL125EventsToolStripMenuItem});
             this.fileToolStripMenuItem1.Name = "fileToolStripMenuItem1";
             this.fileToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.fileToolStripMenuItem1.Text = "File";
@@ -268,6 +273,28 @@
             this.removeFL123EventsToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
             this.removeFL123EventsToolStripMenuItem.Text = "Remove FL12.3 Events";
             this.removeFL123EventsToolStripMenuItem.Click += new System.EventHandler(this.removeFL123EventsToolStripMenuItem_Click);
+            // 
+            // showEventStatisticsToolStripMenuItem
+            // 
+            this.showEventStatisticsToolStripMenuItem.Name = "showEventStatisticsToolStripMenuItem";
+            this.showEventStatisticsToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.showEventStatisticsToolStripMenuItem.Text = "Show Event Statistics";
+            this.showEventStatisticsToolStripMenuItem.Click += new System.EventHandler(this.showEventStatisticsToolStripMenuItem_Click);
+            // 
+            // normalizeToolStripMenuItem
+            // 
+            this.normalizeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.patternToRackToolStripMenuItem});
+            this.normalizeToolStripMenuItem.Name = "normalizeToolStripMenuItem";
+            this.normalizeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.normalizeToolStripMenuItem.Text = "Normalize";
+            // 
+            // patternToRackToolStripMenuItem
+            // 
+            this.patternToRackToolStripMenuItem.Name = "patternToRackToolStripMenuItem";
+            this.patternToRackToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.patternToRackToolStripMenuItem.Text = "Pattern to Rack";
+            this.patternToRackToolStripMenuItem.Click += new System.EventHandler(this.patternToRackToolStripMenuItem_Click);
             // 
             // reloadToolStripMenuItem
             // 
@@ -318,13 +345,6 @@
             this.flpPropertyGrid.TabIndex = 2;
             this.flpPropertyGrid.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.flpPropertyGrid_PreviewKeyDown);
             // 
-            // showEventStatisticsToolStripMenuItem
-            // 
-            this.showEventStatisticsToolStripMenuItem.Name = "showEventStatisticsToolStripMenuItem";
-            this.showEventStatisticsToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
-            this.showEventStatisticsToolStripMenuItem.Text = "Show Event Statistics";
-            this.showEventStatisticsToolStripMenuItem.Click += new System.EventHandler(this.showEventStatisticsToolStripMenuItem_Click);
-            // 
             // LogOutput
             // 
             this.LogOutput.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -333,6 +353,13 @@
             this.LogOutput.Size = new System.Drawing.Size(668, 96);
             this.LogOutput.TabIndex = 3;
             this.LogOutput.Text = "";
+            // 
+            // removeFL125EventsToolStripMenuItem
+            // 
+            this.removeFL125EventsToolStripMenuItem.Name = "removeFL125EventsToolStripMenuItem";
+            this.removeFL125EventsToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.removeFL125EventsToolStripMenuItem.Text = "Remove FL 12.5 Events";
+            this.removeFL125EventsToolStripMenuItem.Click += new System.EventHandler(this.removeFL125EventsToolStripMenuItem_Click);
             // 
             // FLPEditForm
             // 
@@ -391,6 +418,9 @@
         private System.Windows.Forms.ToolStripMenuItem removeFL123EventsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showEventStatisticsToolStripMenuItem;
         private System.Windows.Forms.RichTextBox LogOutput;
+        private System.Windows.Forms.ToolStripMenuItem normalizeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem patternToRackToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem removeFL125EventsToolStripMenuItem;
     }
 }
 

@@ -148,14 +148,18 @@ namespace FLPEdit
 
         private void removeDefaultEntriesToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            int prev = this.CurrentFLPFile.EventCount;
             this.CurrentFLPFile.RemoveRedundantEvents();
-            LogStatusMessage("Removed redundant default events.");
+            int removed = prev - this.CurrentFLPFile.EventCount;
+            LogStatusMessage("Removed "+removed+" redundant default events.");
         }
 
         private void deleteUnusedToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            int prev = this.CurrentFLPFile.EventCount;
             this.CurrentFLPFile.RemoveUnusuedPatterns();
-            LogStatusMessage("Removed unused patterns.");
+            int removed = prev - this.CurrentFLPFile.EventCount;
+            LogStatusMessage("Removed " + removed + " unused pattern events.");
         }
 
         private void resetToolStripMenuItem_Click(object sender, EventArgs e)
@@ -177,8 +181,10 @@ namespace FLPEdit
 
         private void removeFL123EventsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            int prev = this.CurrentFLPFile.EventCount;
             CurrentFLPFile.RemoveFL123Events();
-            LogStatusMessage("Removed redundant default events.");
+            int removed = prev - this.CurrentFLPFile.EventCount;
+            LogStatusMessage("Removed " + removed + " v12.3+ specific events.");
         }
 
         private void showEventStatisticsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -186,6 +192,20 @@ namespace FLPEdit
             string info = CurrentFLPFile.GetEventStatistics();
             this.LogOutput.Text += "\n" + info;
        
+        }
+
+        private void patternToRackToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CurrentFLPFile.PropagatePatternsToRackChannels();
+            LogStatusMessage("Propagated Pattern Names/Colors to unique Rack Channels.");
+        }
+
+        private void removeFL125EventsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int prev = this.CurrentFLPFile.EventCount;
+            CurrentFLPFile.RemoveFL125Events();
+            int removed = prev - this.CurrentFLPFile.EventCount;
+            LogStatusMessage("Removed " + removed + " v12.5 + specific events.");
         }
     }
 }

@@ -29,22 +29,29 @@ namespace FLPXML
                 return;
             }
             string filename = args[0];
-            Log(filename);
-            Log(Directory.Exists(filename)?"True":"False");
 
             if (filename.EndsWith(".flp"))
             {
+                Log("Opening "+filename+" as a FL Studio project...");
                 FLP_File flp = new FLP_File(filename, null);
+                Log(filename + " opened. " + flp.FLPFormat + " file with " + flp.Events.Length + " events.");
                 ProcessFLPFile(flp, filename, args);
             }
             else if (Directory.Exists(filename))
             {
+                Log("Opening " + filename + " as directory...");
                 foreach (string fn in Directory.EnumerateFiles(filename))
                 {
                     if (fn.EndsWith(".flp"))
                     {
+                        Log("Opening " + filename + " as a FL Studio project...");
                         FLP_File flp = new FLP_File(fn, null);
+                        Log(filename + " opened. " + flp.FLPFormat + " file with " + flp.Events.Length + " events.");
                         ProcessFLPFile(flp, fn, args);
+                    }
+                    else
+                    {
+                        Log(filename + " has incorrect extension. Skipping...");
                     }
                 }
             }
@@ -70,7 +77,7 @@ namespace FLPXML
                 {
                     Log("Removing unused patterns from " + filename);
                     int c_pre = f.Events.Length;
-                    f.RemoveUnusuedPatterns();
+                    f.RemoveUnusuedPatterns(true);
                     Log("Done. " + c_pre + "->" + f.Events.Length);
                 }
                 if (cmd == "-clean")
@@ -84,7 +91,7 @@ namespace FLPXML
                 {
                     Log("Removing 12.3 exclusive events from " + filename);
                     int c_pre = f.Events.Length;
-                    f.RemoveFL123Events();
+                    f.RemoveFL123Events(true);
                     Log("Done. " + c_pre + "->" + f.Events.Length);
                 }
                 if (cmd == "-store")
