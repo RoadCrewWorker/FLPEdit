@@ -138,8 +138,11 @@ namespace FLPFileFormat
         [DefaultValueAttribute(64)]
         public byte Release { get; set; }
         [XmlAttribute]
+        [DefaultValueAttribute(0)]
+        public byte UnUsed { get; set; }
+        [XmlAttribute]
         [DefaultValueAttribute(120)]
-        public ushort FinePitch { get; set; }
+        public byte FinePitch { get; set; }
         [XmlAttribute]
         [DefaultValueAttribute(128)]
         public byte ModX { get; set; }
@@ -155,7 +158,8 @@ namespace FLPFileFormat
             this.Duration = r.ReadUInt32(); //4b
             this.intKey = r.ReadUInt32(); //4b
 
-            this.FinePitch = r.ReadUInt16();
+            this.FinePitch = r.ReadByte();
+            this.UnUsed = r.ReadByte();
             this.Release = r.ReadByte();
             this.MidiChannel = r.ReadByte();
             this.Pan = r.ReadByte();
@@ -172,6 +176,7 @@ namespace FLPFileFormat
             w.Write(this.Duration);
             w.Write(this.intKey);
             w.Write(this.FinePitch);
+            w.Write(this.UnUsed);
             w.Write(this.Release);
             w.Write(this.MidiChannel);
             w.Write(this.Pan);

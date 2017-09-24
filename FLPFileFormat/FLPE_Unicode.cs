@@ -26,7 +26,7 @@ namespace FLPFileFormat
             FLP_Text_SampleFileName = FLP_Text + 4,
             FLP_Text_URL = FLP_Text + 5,
             FLP_Text_CommentRTF = FLP_Text + 6,  // comments in Rich Text format
-            //FLP_Version = FLP_Text + 7, //this one is using ANSI
+            FLP_Version = FLP_Text + 7, //this one is using ANSI
             FLP_RegName = FLP_Text + 8,  // since 1.3.9 the (scrambled) reg name is stored in the FLP
             FLP_Text_DefPluginName = FLP_Text + 9,
             FLP_Text_ProjDataPath = FLP_Text + 10,
@@ -54,12 +54,14 @@ namespace FLPFileFormat
 
         public override void DeserializeData(int len, BinaryReader r)
         {
-            this.Text = Encoding.Unicode.GetString(r.ReadBytes(len)).Trim('\0');
+            if (this.Id == FLP_File.EventID.ID_Project_Version) { this.Text = Encoding.ASCII.GetString(r.ReadBytes(len)).Trim('\0'); }
+            else { this.Text = Encoding.Unicode.GetString(r.ReadBytes(len)).Trim('\0'); }
         }
 
         public override void SerializeData(BinaryWriter w)
         {
-            w.Write(Encoding.Unicode.GetBytes(this.Text + '\0'));
+            if (this.Id == FLP_File.EventID.ID_Project_Version) { w.Write(Encoding.ASCII.GetBytes(this.Text + '\0')); }
+            else { w.Write(Encoding.Unicode.GetBytes(this.Text + '\0')); }
         }
         public override bool IsDefault()
         {

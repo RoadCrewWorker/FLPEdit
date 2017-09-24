@@ -214,6 +214,7 @@ namespace FLPFileFormat
             OBS_Reserved2 = FLP_Text + 22 // used once for testing
         }
 
+
         public string GetEventStatistics()
         {
             Dictionary<EventID, int[]> hist = new Dictionary<EventID, int[]>();
@@ -243,6 +244,40 @@ namespace FLPFileFormat
                 r += Math.Round(d[1]*100.0/totalsize,3)+"%\t" + d[0] +"x "+ id +   "\t" + Math.Round(d[1]*1.00 / 1024, 3) + " kb\n";
             }
             return r;
+        }
+
+        public string GetPlaylistStatistics()
+        {
+            /*
+                total:
+                    Clip count, distinct clip count,  
+                per playlist track:
+                    Name, Clip count, distinct clip count (==1?), clip interval
+
+            */
+            return "Still in development...";
+        }
+
+        public string GetPatternStatistics()
+        {
+            /*
+                total:
+                    pattern count, total note count, avg note count
+                per pattern:
+                    channel count, note count, note histogram (-> key guess?), maximum polyphony
+            */
+            return "Still in development...";
+        }
+
+        public string GetMixerStatistics()
+        {
+            /*
+                total:
+                    active routes, fx count
+                per mixer track:
+                    in degree, out degree, fx count, 
+            */
+            return "Still in development...";
         }
 
 
@@ -404,7 +439,7 @@ namespace FLPFileFormat
         }
         public FLP_Event Seek(FLP_Event origin, FLP_File.EventID id, bool forward = true)
         {
-            int i = this._events.IndexOf(origin);
+            int i = ( (origin == null) ? 0 : this._events.IndexOf(origin) );
             if (i == -1) return null;
             int d = forward ? 1 : -1;
             for (; i >= 0 && i < _events.Count; i += d)
@@ -472,7 +507,36 @@ namespace FLPFileFormat
                 if (!used_pattern_ids.Contains(((FLPE_Val)this.Seek(n, EventID.ID_Pattern_New, false)).V))
                     _events.Remove(n);
                     */
-            return mixer;
+           return mixer;
+        }
+        public IEnumerable<FLP_Event> GetMixerEvents()
+        {
+            FLP_Event project_apdc = this.Seek(null, EventID.ID_Project_APDC, true);
+            FLP_Event ctrl_init = this.Seek(project_apdc, EventID.FLP_Ctrl_Init_RecChan, true);
+            List<FLP_Event> mixer_events = new List<FLP_Event>();
+            int start = _events.IndexOf(project_apdc), end = _events.IndexOf(ctrl_init) + 1;
+            for (int i = start; i < end; i++)
+            {
+                mixer_events.Add(_events[i]);
+            }
+            return mixer_events;
+        }
+
+        public void SetMixerEvents(IEnumerable<FLP_Event> new_mixer)
+        {
+            int start = this.DeleteMixerItems(false);
+            _events.InsertRange(start, new_mixer);
+        }
+
+
+        public int DeleteMixerItems(bool verbose = false)
+        {
+            FLP_Event project_apdc = this.Seek(null, EventID.ID_Project_APDC, true);
+            FLP_Event ctrl_init = this.Seek(project_apdc, EventID.FLP_Ctrl_Init_RecChan, true);
+            int start = _events.IndexOf(project_apdc), end = _events.IndexOf(ctrl_init) + 1;
+            if (verbose) Console.WriteLine("Removing " + (end - start) + " events from " + start + " to " + end);
+            _events.RemoveRange(start, end - start);
+            return start;
         }
 
         public void RemoveFL125Events(bool verbose = false)
@@ -490,11 +554,6 @@ namespace FLPFileFormat
                 if (verbose) Console.WriteLine("Removing event: " + n.ToString());
                 _events.Remove(n);
             }
-        }
-
-        public void RemoveMixer()
-        {
-            throw new NotImplementedException();
         }
         
         public void PropagatePatternsToRackChannels()
