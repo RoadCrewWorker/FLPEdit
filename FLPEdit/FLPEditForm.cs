@@ -50,11 +50,24 @@ namespace FLPEdit
 
             if (filename.EndsWith(".flp"))
             {
-                return new FLP_File(filename, loggy);
+                FLP_File loaded = new FLP_File(filename, loggy, delegate (string msg) { LogStatusMessage(msg); });
+                LogStatusMessage("Performing null test...");
+                long error_pos = loaded.PerformNullTest(filename);
+                if (error_pos == -1)
+                {
+                    LogStatusMessage("Null test succeeded.");
+                    return loaded;
+                }
+                else
+                {
+                    LogStatusMessage("Null test failed at byte: "+error_pos+". This usually implies incorrect encoding, incompatible file format or corrupt data. Proceed at your own risk.");
+                    return loaded;
+                    //throw new InvalidDataException("Unable to confirm null test at position" + error_pos);
+                }
             }
             else if (filename.EndsWith(".fst"))
             {
-                return new FLP_File(filename, loggy);
+                return new FLP_File(filename, loggy, delegate (string msg) { LogStatusMessage(msg); });
             }
             else if (filename.EndsWith(".xml"))
             {
@@ -72,11 +85,18 @@ namespace FLPEdit
         private void LoadAndShowFLPFile(string filename)
         {
             TextWriter loggy = File.CreateText(filename + ".log");
-            DateTime t1 = DateTime.Now;
-            this.CurrentFLPFile = this.LoadFLPFile(filename, loggy);
-            this.Text = "FLP Edit ["+Path.GetFileName(filename)+"]";
+            try
+            {
+                LogStatusMessage("Loading: " + this.CurrentFilename);
+                this.CurrentFLPFile = this.LoadFLPFile(filename, loggy);
+                LogStatusMessage("Successfully loaded '" + this.CurrentFilename + "'. Use Inspector - Show Current to view structure.");
+                this.Text = "FLP Edit [" + Path.GetFileName(filename) + "]";
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
             loggy.Close();
-            DateTime t2 = DateTime.Now;
         }
 
         private void loadNewToolStripMenuItem_Click(object sender, EventArgs e)
@@ -84,9 +104,7 @@ namespace FLPEdit
             if (this.openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 this.CurrentFilename = this.openFileDialog.FileName;
-                LogStatusMessage("Loading: " + this.CurrentFilename);
                 LoadAndShowFLPFile(this.CurrentFilename);
-                LogStatusMessage("Completed Loading: " + this.CurrentFilename);
             }
         }
 
@@ -97,9 +115,7 @@ namespace FLPEdit
                 MessageBox.Show("Invalid or no file loaded previously.");
                 return;
             }
-            LogStatusMessage("Reloading: " + this.CurrentFilename);
             LoadAndShowFLPFile(this.CurrentFilename);
-            LogStatusMessage("Completed Loading: " + this.CurrentFilename);
         }
         
         #endregion
@@ -203,6 +219,8 @@ namespace FLPEdit
 
         private void removeDefaultEntriesToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //Todo: Potential problem - default INIT events get removed even if they have non-default follow up events!
+            //In that case the follow up events remain without the appropriate INIT event.
             int prev = this.CurrentFLPFile.EventCount;
             this.CurrentFLPFile.RemoveRedundantEvents();
             int removed = prev - this.CurrentFLPFile.EventCount;
@@ -293,5 +311,36 @@ namespace FLPEdit
         }
         #endregion
 
+        #region Compatibility Options
+        private void aSCIIOnlyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //aSCIIOnlyToolStripMenuItem.Checked = !aSCIIOnlyToolStripMenuItem.Checked;
+            //FLPE_Unicode.UseAsciiFallback = aSCIIOnlyToolStripMenuItem.Checked;
+        }
+
+        private void allowUnknownIDsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            allowUnknownIDsToolStripMenuItem.Checked = !allowUnknownIDsToolStripMenuItem.Checked;
+            FLP_File.Dbg_AllowUnknownIDs = allowUnknownIDsToolStripMenuItem.Checked;
+        }
+        #endregion
+
+        private void dBGUnlockUnfixedOperationsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //May lord have mercy on your soul.
+            //Well, mostly your flp projects, but your soul as well.
+            deleteUnusedToolStripMenuItem.Enabled =
+                removeFL125EventsToolStripMenuItem.Enabled = 
+                removeDefaultEntriesToolStripMenuItem.Enabled =
+                removeFL123EventsToolStripMenuItem.Enabled =
+                dBGUnlockUnfixedOperationsToolStripMenuItem.Checked =
+                !dBGUnlockUnfixedOperationsToolStripMenuItem.Checked;
+        }
+
+        private void sourceChannelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CurrentFLPFile.NormalizePlaylistBySource(true);
+        }
     }
 }

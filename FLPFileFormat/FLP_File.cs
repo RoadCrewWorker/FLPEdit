@@ -21,6 +21,9 @@ namespace FLPFileFormat
     [Serializable]
     public class FLP_File
     {
+        public static bool Dbg_AllowUnknownIDs = false;
+        public bool UsesUnicodeStrings = true;
+
         public enum FLP_Format : short
         {
             FLP_Format_None = -1,      // temporary
@@ -213,97 +216,29 @@ namespace FLPFileFormat
             OBS_DelayLine = FLP_Text + 19, // obsolete
             OBS_Reserved2 = FLP_Text + 22 // used once for testing
         }
-
-
-        public string GetEventStatistics()
-        {
-            Dictionary<EventID, int[]> hist = new Dictionary<EventID, int[]>();
-
-            for (int event_index = 0; event_index < this._events.Count; event_index++)
-            {
-            }
-            int totalsize = 0;
-            foreach (FLP_Event e in this.Events)
-            {
-                if (!hist.ContainsKey(e.Id)) hist.Add(e.Id, new int[2]);
-                int[] d = hist[e.Id];
-                d[0]++;
-                MemoryStream temp_stream = new MemoryStream();
-                BinaryWriter temp_writer = new BinaryWriter(temp_stream);
-                e.Serialize(temp_writer);
-                temp_writer.Close();
-                byte[] data = temp_stream.ToArray();
-                d[1] += data.Length;
-                totalsize+= data.Length;
-            }
-
-            string r = "";
-            foreach(EventID id in hist.Keys)
-            {
-                int[] d = hist[id];
-                r += Math.Round(d[1]*100.0/totalsize,3)+"%\t" + d[0] +"x "+ id +   "\t" + Math.Round(d[1]*1.00 / 1024, 3) + " kb\n";
-            }
-            return r;
-        }
-
-        public string GetPlaylistStatistics()
-        {
-            /*
-                total:
-                    Clip count, distinct clip count,  
-                per playlist track:
-                    Name, Clip count, distinct clip count (==1?), clip interval
-
-            */
-            return "Still in development...";
-        }
-
-        public string GetPatternStatistics()
-        {
-            /*
-                total:
-                    pattern count, total note count, avg note count
-                per pattern:
-                    channel count, note count, note histogram (-> key guess?), maximum polyphony
-            */
-            return "Still in development...";
-        }
-
-        public string GetMixerStatistics()
-        {
-            /*
-                total:
-                    active routes, fx count
-                per mixer track:
-                    in degree, out degree, fx count, 
-            */
-            return "Still in development...";
-        }
-
-
-
+        
         /*
-   FL Studio doesnt need any Channels to load a project.
-   Or any Playlisttracks (it adds 34 default ones on saving)
-   Or Patterns,Filters
-   Or Project description Texts
-   Or mixer tracks
-   Or any events at all.
-   Looks like it will just use default values for that stuff.
-   TODO: Possible to delete default value events? (Ordering!)
+           FL Studio doesnt need any Channels to load a project.
+           Or any Playlisttracks (it adds 34 default ones on saving)
+           Or Patterns,Filters
+           Or Project description Texts
+           Or mixer tracks
+           Or any events at all.
+           Looks like it will just use default values for that stuff.
+           TODO: Possible to delete default value events? (Ordering!)
 
 
-   TODO: transform serial list to tree
-      parent events: project, channel, plugin, mixer track, ???
+           TODO: transform serial list to tree
+              parent events: project, channel, plugin, mixer track, ???
 
 
-   TODO: basic scripts
-   channel/note histogram, map to scales?
-   normalize project:
-       - split all patterns into channels
-       - sort all clips based on channel into distinct playlist lane
-       - map 
-*/
+           TODO: basic scripts
+           channel/note histogram, map to scales?
+           normalize project:
+               - split all patterns into channels
+               - sort all clips based on channel into distinct playlist lane
+               - map 
+        */
         private List<FLP_Event> _events = new List<FLP_Event>();
 
         //Members
@@ -361,14 +296,38 @@ namespace FLPFileFormat
         {
             //Empty constructor for XMLSerialization
         }
-        public FLP_File(string filename, TextWriter logger)
+        public FLP_File(string filename, TextWriter logger = null, Action<string> reporter = null)
         {
             BinaryReader r = new BinaryReader(File.OpenRead(filename));
-            this.Deserialize(r, logger);
+            this.Deserialize(r, logger, reporter);
             r.Close();
         }
+        public long PerformNullTest(string filename)
+        {
+            MemoryStream temp_stream = new MemoryStream();
+            BinaryWriter temp_writer = new BinaryWriter(temp_stream);
+            this.Serialize(temp_writer);
+            temp_writer.Close();
 
-        public void Deserialize(BinaryReader r, TextWriter logger)
+            MemoryStream read_stream = new MemoryStream(temp_stream.ToArray());
+            BinaryReader r = new BinaryReader(File.OpenRead(filename));
+            BinaryReader r2 = new BinaryReader(read_stream);
+            while (r.BaseStream.Position < r.BaseStream.Length)
+            {
+                byte orig=r.ReadByte();
+                byte serialized = r2.ReadByte();
+                if (orig != serialized)
+                {
+                    long error_pos = r.BaseStream.Position;
+                    r.Close(); r2.Close();
+                    return error_pos;
+                }
+            }
+            r.Close(); r2.Close();
+            return -1;
+        }
+
+        public void Deserialize(BinaryReader r, TextWriter logger, Action<string> reporter=null)
         {
             //01. read header
             this.FLPHeaderChunkID = r.ReadChars(4); //"FLhd" FL header
@@ -388,25 +347,40 @@ namespace FLPFileFormat
                 if (p == r.BaseStream.Length) break;
                 try
                 {
-                    next_event = FLP_Event.FromEventID((FLP_File.EventID)r.ReadByte());
+                    next_event = FLP_Event.FromEventID((FLP_File.EventID)r.ReadByte(),false);
                     if(logger!=null) logger.WriteLine((p) + " B = " + next_event.Id);
                     if (next_event != null)
                     {
+                        if (next_event is FLPE_Unicode) { ((FLPE_Unicode)next_event).ParentProject = this; }
+                        next_event.Deserialize(r);
+                        this._events.Add(next_event);
+                    }
+                }
+                catch (InvalidDataException ivd)
+                {
+                    //Reset the stream
+                    if (reporter != null)
+                        reporter("Error occured: " + ivd.Message + ". Falling back to generic parsing...");
+                    r.BaseStream.Seek(p, SeekOrigin.Begin);
+                    next_event = FLP_Event.FromEventID((FLP_File.EventID)r.ReadByte(), true); // Try again, this time with fallback mode
+                    if (logger != null) logger.WriteLine((p) + " B = " + next_event.Id);
+                    if (next_event != null)
+                    {
+                        if (next_event is FLPE_Unicode) { ((FLPE_Unicode)next_event).ParentProject = this; }
                         next_event.Deserialize(r);
                         this._events.Add(next_event);
                     }
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.ToString()); //TODO ADD handling for this, proper error output/logging
-                    next_event = null; //This causes the deserialization to abort since we've likely lost event sync.
+                    throw new InvalidDataException("Error while loading [" + r.BaseStream.Position + "B]: " + e.Message);
                 }
             }
             while (next_event != null);
 
             if (r.BaseStream.Position < r.BaseStream.Length)
             {
-                throw new InvalidDataException("FLP Deserialization incomplete: " + r.BaseStream.Position + "<" + r.BaseStream.Length);
+                throw new InvalidDataException("Unable to complete loading: " + r.BaseStream.Position + "<" + r.BaseStream.Length+" bytes parsed.");
             }
         }
 
@@ -433,24 +407,48 @@ namespace FLPFileFormat
             w.Write(data);
         }
 
+        #region Helper functions
+        public List<FLP_Event> GetEventsWithIDs(params FLP_File.EventID[] ids)
+        {
+            return _events.FindAll(delegate (FLP_Event e) { return Array.IndexOf(ids, e.Id) != -1; });
+        }
+        #endregion
+
+        #region Removal
         public void RemoveRedundantEvents()
         {
             this._events = _events.FindAll(delegate (FLP_Event e) { return !e.IsDefault(); });
         }
-        public FLP_Event Seek(FLP_Event origin, FLP_File.EventID id, bool forward = true)
+        public FLP_Event Seek(FLP_Event origin, FLP_File.EventID id, bool forward = true, ISet<FLP_File.EventID> abort_on = null)
         {
-            int i = ( (origin == null) ? 0 : this._events.IndexOf(origin) );
+            int i = ((origin == null) ? 0 : this._events.IndexOf(origin));
             if (i == -1) return null;
             int d = forward ? 1 : -1;
+            //Always perform the first step...
+            if (origin != null) i += d;
             for (; i >= 0 && i < _events.Count; i += d)
             {
                 if (_events[i].Id == id) return _events[i];
+                if (abort_on != null && abort_on.Contains(_events[i].Id)) return null;
             }
             return null;
         }
-        public List<FLP_Event> GetEventsWithIDs(params FLP_File.EventID[] ids)
+
+        public void RemoveFL125Events(bool verbose = false)
         {
-            return _events.FindAll(delegate (FLP_Event e) { return Array.IndexOf(ids,e.Id)!=-1; });
+            foreach (FLP_Event n in this.GetEventsWithIDs(EventID.FL12_5_Unknown))
+            {
+                if (verbose) Console.WriteLine("Removing event: " + n.ToString());
+                _events.Remove(n);
+            }
+        }
+        public void RemoveFL123Events(bool verbose = false)
+        {
+            foreach (FLP_Event n in this.GetEventsWithIDs(EventID.FL12_3_Channel_LockedMidiController, EventID.FL12_3_MixerTrack_Unknown))
+            {
+                if (verbose) Console.WriteLine("Removing event: " + n.ToString());
+                _events.Remove(n);
+            }
         }
 
         // This is now part of Fl 12.5! This is still useful for batching though
@@ -490,7 +488,9 @@ namespace FLPFileFormat
                     _events.Remove(n);
                 }
         }
+        #endregion
 
+        #region Mixer Manipulation
         public FLP_File ExtractMixer()
         {
 
@@ -528,7 +528,6 @@ namespace FLPFileFormat
             _events.InsertRange(start, new_mixer);
         }
 
-
         public int DeleteMixerItems(bool verbose = false)
         {
             FLP_Event project_apdc = this.Seek(null, EventID.ID_Project_APDC, true);
@@ -538,24 +537,40 @@ namespace FLPFileFormat
             _events.RemoveRange(start, end - start);
             return start;
         }
+        #endregion
 
-        public void RemoveFL125Events(bool verbose = false)
+        #region Normalization
+        public void NormalizePlaylistBySource(bool verbose = false)
         {
-            foreach (FLP_Event n in this.GetEventsWithIDs(EventID.FL12_5_Unknown))
+            FLPE_Playlist_Events playlist = (FLPE_Playlist_Events)this.Seek(null, EventID.ID_Playlist_Events, true);
+            if (playlist == null) return; // "No Playlist data located, possibly corrupt or invalid file?";
+
+
+            Dictionary<ushort, List<PlaylistClip>> sources = new Dictionary<ushort, List<PlaylistClip>>();
+
+            foreach (PlaylistClip clip in playlist.PlaylistItems)
             {
-                if (verbose) Console.WriteLine("Removing event: " + n.ToString());
-                _events.Remove(n);
+                if (!sources.ContainsKey(clip.ClipSource))
+                {
+                    sources[clip.ClipSource] = new List<PlaylistClip>();
+                }
+                sources[clip.ClipSource].Add(clip);
             }
-        } 
-        public void RemoveFL123Events(bool verbose=false)
-        {
-            foreach (FLP_Event n in this.GetEventsWithIDs(EventID.FL12_3_Channel_LockedMidiController, EventID.FL12_3_MixerTrack_Unknown))
+            ushort[] sorted = new ushort[sources.Keys.Count];
+            sources.Keys.CopyTo(sorted, 0);
+            //Select attribute to sort by: id, name, count, size in bytes
+            Array.Sort(sorted, delegate (ushort a, ushort b) { return -sources[a].Count.CompareTo(sources[a].Count); });
+
+            foreach (ushort source in sorted)
             {
-                if (verbose) Console.WriteLine("Removing event: " + n.ToString());
-                _events.Remove(n);
+                ushort new_track = (ushort)(198 - (Array.IndexOf<ushort>(sorted, source) % 198));
+                foreach (PlaylistClip clip in sources[source])
+                {
+                    clip.PlaylistTrack = new_track;
+                }
             }
         }
-        
+
         public void PropagatePatternsToRackChannels()
         {
             //Step 1: For each generator:
@@ -604,5 +619,124 @@ namespace FLPFileFormat
 	            indexing into mixer tracks how?
             */
         }
+        #endregion
+
+        #region Statistics
+        public string GetEventStatistics()
+        {
+            Dictionary<EventID, int[]> hist = new Dictionary<EventID, int[]>();
+
+            int totalsize = 0;
+            foreach (FLP_Event e in this.Events)
+            {
+                if (!hist.ContainsKey(e.Id)) hist.Add(e.Id, new int[2]);
+                int[] d = hist[e.Id];
+                d[0]++;
+                MemoryStream temp_stream = new MemoryStream();
+                BinaryWriter temp_writer = new BinaryWriter(temp_stream);
+                e.Serialize(temp_writer);
+                temp_writer.Close();
+                byte[] data = temp_stream.ToArray();
+                d[1] += data.Length;
+                totalsize += data.Length;
+            }
+
+            string r = "Total Events: " + this.EventCount + " (" + Math.Round(totalsize * 1.00 / 1024, 3) + " kb), " + hist.Keys.Count + " unique IDs:\n";
+
+            EventID[] sorted = new EventID[hist.Keys.Count];
+            hist.Keys.CopyTo(sorted, 0);
+            //Select attribute to sort by: id, name, count, size in bytes
+            Array.Sort(sorted, delegate (EventID a, EventID b) { return -hist[a][0].CompareTo(hist[b][0]); });
+
+            foreach (EventID id in sorted)
+            {
+                int[] d = hist[id];
+                r += d[0] + "x\t" + Math.Round(d[1] * 100.0 / totalsize, 3) + "%\t" + Math.Round(d[1] * 1.00 / 1024, 3) + " kb\t" + id + "\n";
+            }
+            return r;
+        }
+
+        public string GetPlaylistStatistics()
+        {
+            FLP_Event pl=this.Seek(null, EventID.ID_Playlist_Events, true);
+            if (pl == null || !(pl is FLPE_Playlist_Events)) return "No or unparsable Playlist data located, possibly incompatible or corrupted file.";
+            FLPE_Playlist_Events playlist = (FLPE_Playlist_Events)pl;
+
+            List <FLP_Event> track_infos = GetEventsWithIDs(EventID.ID_Playlist_Track_Info);
+
+            Dictionary<uint, List<PlaylistClip>> hist = new Dictionary<uint, List<PlaylistClip>>();
+            HashSet<ushort> sources = new HashSet<ushort>();
+
+            foreach (PlaylistClip clip in playlist.PlaylistItems)
+            {
+                if (!hist.ContainsKey(clip.PlaylistTrack))
+                {
+                    hist[clip.PlaylistTrack] = new List<PlaylistClip>();
+                }
+                hist[clip.PlaylistTrack].Add(clip);
+                sources.Add(clip.ClipSource);
+            }
+
+            string r = "PL [ALL]\t unique: " + sources.Count + "\t total: " + playlist.PlaylistItems.Length + "\n";
+
+            HashSet<EventID> abort = new HashSet<EventID>(new EventID[] { EventID.ID_Playlist_Track_Info });
+            for (uint playlisttrack = 199; playlisttrack <200; playlisttrack--) //Abusing unsigned int underflow here
+            {
+                if (!hist.ContainsKey(playlisttrack)) continue;
+                ID_Playlist_Track_Info t_i = null;
+                foreach (FLP_Event i in track_infos) if (i is ID_Playlist_Track_Info && ((ID_Playlist_Track_Info)i).TrackNumber == (199 - playlisttrack)) { t_i = (ID_Playlist_Track_Info)i; break; }
+                FLPE_Unicode t_n = (FLPE_Unicode)this.Seek(t_i, EventID.ID_Playlist_Track_Name, true, abort);
+
+                HashSet<ushort> track_sources = new HashSet<ushort>();
+                List<PlaylistClip> track_clips = hist[playlisttrack];
+                uint pos_first = uint.MaxValue, pos_last = uint.MinValue;
+                foreach (PlaylistClip clip in track_clips)
+                {
+                    track_sources.Add(clip.ClipSource);
+                    if (clip.Position < pos_first) pos_first = clip.Position;
+                    //TODO: account for windowing?
+                    if (clip.Position + clip.Duration > pos_last) pos_last = clip.Position + clip.Duration;
+                }
+                r += "T #" + (t_i == null ? (199 - playlisttrack) : t_i.TrackNumber) + "\t unique: " + track_sources.Count + "\t total: " + track_clips.Count + "\t [" + pos_first + "-" + pos_last + "]\t'" + (t_n == null ? "" : t_n.Text) + "'\t(" + (t_i == null ? "Default" : "" + t_i.HexColor) + ")\n";
+            }
+            return r;
+        }
+
+        public string GetPatternStatistics()
+        {
+            List<FLP_Event> pattern_inits = GetEventsWithIDs(EventID.ID_Pattern_New);
+            FLP_Event[][] pattern_data = new FLP_Event[1000][];
+
+            HashSet<EventID> abort = new HashSet<EventID>(new EventID[] { EventID.ID_Pattern_New });
+            foreach (FLP_Event pattern_id in pattern_inits)
+            {
+                if (!(pattern_id is FLPE_Val)) continue;
+                if (pattern_data[((FLPE_Val)pattern_id).V] == null) pattern_data[((FLPE_Val)pattern_id).V] = new FLP_Event[4];
+                FLPE_Pattern_Note_Events notes = (FLPE_Pattern_Note_Events)this.Seek(pattern_id, EventID.ID_Pattern_Note_Events, true, abort);
+                FLPE_Pattern_Ctrl_Events ctrl_events = (FLPE_Pattern_Ctrl_Events)this.Seek(pattern_id, EventID.ID_Pattern_Ctrl_Events, true, abort);
+                FLPE_Unicode name = (FLPE_Unicode)this.Seek(pattern_id, EventID.ID_Pattern_Name, true, abort);
+                FLPE_Color color = (FLPE_Color)this.Seek(pattern_id, EventID.ID_Pattern_Color, true, abort);
+            }
+
+            /*
+                total:
+                    pattern count, total note count, avg note count
+                per pattern:
+                    channel count, note count, note histogram (-> key guess?), maximum polyphony
+            */
+            return "Still in development...";
+        }
+
+        public string GetMixerStatistics()
+        {
+            /*
+                total:
+                    active routes, fx count
+                per mixer track:
+                    in degree, out degree, fx count, 
+            */
+            return "Still in development...";
+        }
+        #endregion
     }
 }

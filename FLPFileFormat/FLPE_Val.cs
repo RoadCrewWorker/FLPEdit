@@ -38,11 +38,14 @@ namespace FLPFileFormat
         }
 
         //Rekursive Factory Method for fixed length values (1,2,4 bytes)
-        public static new FLP_Event FromEventID(FLP_File.EventID id)
+        public static new FLP_Event FromEventID(FLP_File.EventID id, bool use_fallback=false)
         {
-            if (id == FLP_File.EventID.ID_Channel_CutCutBy) return new FLPE_CutCutBy(id);
-            if (id == FLP_File.EventID.ID_Channel_Delay_ModXYChange) return new FLPE_DelayFRes(id);
-            if (Enum.IsDefined(typeof(FLPE_Color.ValidIDs), (byte)id)) return new FLPE_Color(id);
+            if (!use_fallback)
+            {
+                if (id == FLP_File.EventID.ID_Channel_CutCutBy) return new FLPE_CutCutBy(id);
+                if (id == FLP_File.EventID.ID_Channel_Delay_ModXYChange) return new FLPE_DelayFRes(id);
+                if (Enum.IsDefined(typeof(FLPE_Color.ValidIDs), (byte)id)) return new FLPE_Color(id);
+            }
             int bytelength = id < (FLP_File.EventID)FLP_File.FLP_Word ? 1 : id < (FLP_File.EventID)FLP_File.FLP_Int ? 2 : 4;
            //if (Enum.IsDefined(typeof(FLPE_Val.ValidIDs), (byte)id))
                 return new FLPE_Val(id, bytelength);

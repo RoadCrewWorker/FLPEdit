@@ -85,27 +85,43 @@ namespace FLPFileFormat
         [XmlAttribute]
         public uint Position { get; set; }
         [XmlAttribute]
-        public uint Channel { get; set; }
+        public byte Parameter_U1 { get; set; }
         [XmlAttribute]
-        public uint Value { get; set; }
+        public byte Parameter_U2 { get; set; }
+        [XmlAttribute]
+        public byte TargetChannel { get; set; }
+        [XmlAttribute]
+        public byte TargetFlags { get; set; }
+
+        //Value is either a normalized 0.0-1.0 4 byte float for vst parameters (- sticking with this for now)
+        //or a 4 byte integer (in the range of 0 to 12800) for FLs internal parameters.
+        //oh boy
+        [XmlAttribute]
+        public float Value { get; set; } 
 
         public void Deserialize(BinaryReader r)
         {
             this.Position = r.ReadUInt32();
-            this.Channel = r.ReadUInt32();
-            this.Value = r.ReadUInt32();
+            this.Parameter_U1 = r.ReadByte();
+            this.Parameter_U2 = r.ReadByte();
+            this.TargetChannel = r.ReadByte();
+            this.TargetFlags = r.ReadByte();
+            this.Value = r.ReadSingle();
         }
 
         public void Serialize(BinaryWriter w)
         {
             w.Write(this.Position);
-            w.Write(this.Channel);
+            w.Write(this.Parameter_U1);
+            w.Write(this.Parameter_U2);
+            w.Write(this.TargetChannel);
+            w.Write(this.TargetFlags);
             w.Write(this.Value);
         }
 
         public override string ToString()
         {
-            return "ControlEvent [Channel: " + this.Channel + " Pos:" + this.Position + " Value:" + this.Value + "]";
+            return "ControlEvent [Type: " + this.Parameter_U1 + ", "+this.Parameter_U2 + ", Channel:" + this.TargetChannel + ", Flags:" + this.TargetFlags + " Pos:" + this.Position + " Value:" + this.Value + "]";
         }
     }
 }

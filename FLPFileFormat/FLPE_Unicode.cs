@@ -13,6 +13,9 @@ namespace FLPFileFormat
     [Serializable]
     public class FLPE_Unicode : FLPE_Data
     {
+        //Global modifer to avoid Unicode if nessecary.
+        public FLP_File ParentProject;
+
         //Enum members just used for ID matching, labels are not used.
         public enum ValidIDs : byte
         {
@@ -54,14 +57,27 @@ namespace FLPFileFormat
 
         public override void DeserializeData(int len, BinaryReader r)
         {
-            if (this.Id == FLP_File.EventID.ID_Project_Version) { this.Text = Encoding.ASCII.GetString(r.ReadBytes(len)).Trim('\0'); }
-            else { this.Text = Encoding.Unicode.GetString(r.ReadBytes(len)).Trim('\0'); }
+            if (this.Id == FLP_File.EventID.ID_Project_Version) {
+                this.Text = Encoding.ASCII.GetString(r.ReadBytes(len)).Trim('\0');
+                if (this.ParentProject != null)
+                {
+                    this.ParentProject.UsesUnicodeStrings = this.Text.StartsWith("11.5") || this.Text.StartsWith("12."); //god i hate version number parsing so much
+                }
+            }
+            else {
+                this.Text = (this.ParentProject == null || this.ParentProject.UsesUnicodeStrings) ? Encoding.Unicode.GetString(r.ReadBytes(len)).Trim('\0') : Encoding.ASCII.GetString(r.ReadBytes(len)).Trim('\0');
+            }
         }
 
         public override void SerializeData(BinaryWriter w)
         {
-            if (this.Id == FLP_File.EventID.ID_Project_Version) { w.Write(Encoding.ASCII.GetBytes(this.Text + '\0')); }
-            else { w.Write(Encoding.Unicode.GetBytes(this.Text + '\0')); }
+            if (this.Id == FLP_File.EventID.ID_Project_Version || (this.ParentProject != null && !this.ParentProject.UsesUnicodeStrings))
+            {
+                w.Write(Encoding.ASCII.GetBytes(this.Text + '\0'));
+            }
+            else {
+                w.Write(Encoding.Unicode.GetBytes(this.Text + '\0'));
+            }
         }
         public override bool IsDefault()
         {

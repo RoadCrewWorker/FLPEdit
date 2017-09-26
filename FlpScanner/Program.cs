@@ -19,22 +19,28 @@ namespace FLPXML
             if (args.Length < 1)
             {
                 Console.WriteLine("Usage: FLP-XML.exe <FLP, XML or Dir> [action, action, action ...] \nwhere action:"
+                    + "\n__________________________________"
+                    + "\n-info : list a few properties"
+                    + "\n__________________________________"
                     + "\n-rup : Remove Unusued Patterns"
-                    + "\n-clean : Remove redundant default values"
-                    + "\n-12.2 : Remove 12.3 beta data"
-                    + "\n-store : Store as FLP"
-                    + "\n-xml : Export to XML"
-                    + "\nExample: -clean -12.2 -store"
-                    + "\nExample: -rup -store -clean -xml");
+                    + "\n-rdv : Remove redundant default values"
+                    + "\n-r123 : Remove 12.3 events"
+                    + "\n-r125 : Remove 12.5 events"
+                    + "\n__________________________________"
+                    + "\n-store : Save as FLP"
+                    + "\n-xml : Save as XML"
+                    + "\n__________________________________"
+                    + "\nExample: -rdv -r123 -store"
+                    + "\nExample: -rup -store -rdv -xml");
                 return;
             }
             string filename = args[0];
 
             if (filename.EndsWith(".flp"))
             {
-                Log("Opening "+filename+" as a FL Studio project...");
-                FLP_File flp = new FLP_File(filename, null);
-                Log(filename + " opened. " + flp.FLPFormat + " file with " + flp.Events.Length + " events.");
+                //Log("Opening "+filename+" as a FL Studio project...");
+                FLP_File flp = new FLP_File(filename);
+               // Log(filename + " opened. " + flp.FLPFormat + " file with " + flp.Events.Length + " events.");
                 ProcessFLPFile(flp, filename, args);
             }
             else if (Directory.Exists(filename))
@@ -44,14 +50,14 @@ namespace FLPXML
                 {
                     if (fn.EndsWith(".flp"))
                     {
-                        Log("Opening " + filename + " as a FL Studio project...");
-                        FLP_File flp = new FLP_File(fn, null);
-                        Log(filename + " opened. " + flp.FLPFormat + " file with " + flp.Events.Length + " events.");
+                        //Log("Opening " + filename + " as a FL Studio project...");
+                        FLP_File flp = new FLP_File(fn);
+                        //Log(filename + " opened. " + flp.FLPFormat + " file with " + flp.Events.Length + " events.");
                         ProcessFLPFile(flp, fn, args);
                     }
                     else
                     {
-                        Log(filename + " has incorrect extension. Skipping...");
+                        Log(fn + " has incorrect extension. Skipping...");
                     }
                 }
             }
@@ -73,6 +79,27 @@ namespace FLPXML
         {
             foreach (string cmd in cmds)
             {
+                if (cmd == "-info")
+                {
+                    /*
+                        path author title bpm started worktime flversion 
+                    */
+                    FLPE_Unicode flversion = ((FLPE_Unicode)f.Seek(null, FLP_File.EventID.ID_Project_Version));
+                    FLPE_Unicode author = ((FLPE_Unicode)f.Seek(null, FLP_File.EventID.ID_Project_Author));
+                    FLPE_Unicode regname = ((FLPE_Unicode)f.Seek(null, FLP_File.EventID.ID_Project_RegName));
+                    FLPE_Unicode title = ((FLPE_Unicode)f.Seek(null, FLP_File.EventID.ID_Project_Title));
+                    FLPE_Val bpm = ((FLPE_Val)f.Seek(null, FLP_File.EventID.ID_Project_FineTempo));
+                    FLPE_Project_Time ptime = (FLPE_Project_Time)f.Seek(null, FLP_File.EventID.ID_Project_Time);
+
+                    Log(Path.GetFileNameWithoutExtension(filename) + " | " 
+                        + (flversion==null?"":flversion.Text) + " | "
+                        + (author == null ? "Missing" : author.Text) + " | "
+                        + (regname == null ? "Missing" : regname.Text) + " | "
+                        + (title == null ? "Missing" : title.Text) + " | "
+                        + (bpm == null ? "Missing" : bpm.V+"Bpm") + " | "
+                        + (ptime == null ? "Missing | Missing" : ptime.StartDate+" | "+ptime.WorkTime) + " | "
+                        + f.EventCount);
+                }
                 if (cmd == "-rup")
                 {
                     Log("Removing unused patterns from " + filename);
@@ -80,20 +107,28 @@ namespace FLPXML
                     f.RemoveUnusuedPatterns(true);
                     Log("Done. " + c_pre + "->" + f.Events.Length);
                 }
-                if (cmd == "-clean")
+                if (cmd == "-rdv")
                 {
                     Log("Removing redundant events from " + filename);
                     int c_pre = f.Events.Length;
                     f.RemoveRedundantEvents();
                     Log("Done. " + c_pre + "->" + f.Events.Length);
                 }
-                if (cmd == "-12.2")
+                if (cmd == "-r123")
                 {
                     Log("Removing 12.3 exclusive events from " + filename);
                     int c_pre = f.Events.Length;
                     f.RemoveFL123Events(true);
                     Log("Done. " + c_pre + "->" + f.Events.Length);
                 }
+                if (cmd == "-r125")
+                {
+                    Log("Removing 12.5 exclusive events from " + filename);
+                    int c_pre = f.Events.Length;
+                    f.RemoveFL125Events(true);
+                    Log("Done. " + c_pre + "->" + f.Events.Length);
+                }
+
                 if (cmd == "-store")
                 {
                     Log("Storing " + filename);

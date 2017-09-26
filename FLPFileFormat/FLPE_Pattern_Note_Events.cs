@@ -49,7 +49,7 @@ namespace FLPFileFormat
 
         public override string ToString()
         {
-            return Id + " = " + this._notes.Count + " Notes" + String.Join<ushort>(",", this.GetRackChannels());
+            return Id + " = " + this._notes.Count + " Notes => Rack Channel(s): " + String.Join<ushort>(", ", this.GetRackChannels());
         }
 
         public override void DeserializeData(int len, BinaryReader r)
