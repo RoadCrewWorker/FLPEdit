@@ -65,16 +65,18 @@
             this.aSCIIOnlyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allowUnknownIDsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dBGUnlockUnfixedOperationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusStrip = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFLPFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.saveXMLFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.flpPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.LogOutput = new System.Windows.Forms.RichTextBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.splitByChannelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.splitByNoteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importFromProjectToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.mergeWithToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.enableNullTestslowButSafeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
-            this.statusStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -91,7 +93,7 @@
             this.compatibilityToolStripMenuItem});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
-            this.mainMenuStrip.Size = new System.Drawing.Size(753, 24);
+            this.mainMenuStrip.Size = new System.Drawing.Size(489, 24);
             this.mainMenuStrip.TabIndex = 0;
             this.mainMenuStrip.Text = "menuStrip1";
             // 
@@ -164,14 +166,14 @@
             // eventsToolStripMenuItem
             // 
             this.eventsToolStripMenuItem.Name = "eventsToolStripMenuItem";
-            this.eventsToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.eventsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.eventsToolStripMenuItem.Text = "Events";
             this.eventsToolStripMenuItem.Click += new System.EventHandler(this.showEventStatisticsToolStripMenuItem_Click);
             // 
             // playlistToolStripMenuItem1
             // 
             this.playlistToolStripMenuItem1.Name = "playlistToolStripMenuItem1";
-            this.playlistToolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
+            this.playlistToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.playlistToolStripMenuItem1.Text = "Playlist";
             this.playlistToolStripMenuItem1.Click += new System.EventHandler(this.showPlaylistStatisticsToolStripMenuItem1_Click);
             // 
@@ -179,14 +181,14 @@
             // 
             this.mixerToolStripMenuItem1.Enabled = false;
             this.mixerToolStripMenuItem1.Name = "mixerToolStripMenuItem1";
-            this.mixerToolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
-            this.mixerToolStripMenuItem1.Text = "Mixer";
+            this.mixerToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.mixerToolStripMenuItem1.Text = "Routing";
             this.mixerToolStripMenuItem1.Click += new System.EventHandler(this.showMixerStatisticsToolStripMenuItem1_Click);
             // 
             // patternsToolStripMenuItem1
             // 
             this.patternsToolStripMenuItem1.Name = "patternsToolStripMenuItem1";
-            this.patternsToolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
+            this.patternsToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.patternsToolStripMenuItem1.Text = "Patterns";
             this.patternsToolStripMenuItem1.Click += new System.EventHandler(this.showPatternsStatisticsToolStripMenuItem1_Click);
             // 
@@ -195,7 +197,8 @@
             this.fileToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.removeDefaultEntriesToolStripMenuItem,
             this.removeFL123EventsToolStripMenuItem,
-            this.removeFL125EventsToolStripMenuItem});
+            this.removeFL125EventsToolStripMenuItem,
+            this.mergeWithToolStripMenuItem});
             this.fileToolStripMenuItem1.Name = "fileToolStripMenuItem1";
             this.fileToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.fileToolStripMenuItem1.Text = "File";
@@ -273,7 +276,10 @@
             // patternsToolStripMenuItem
             // 
             this.patternsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.deleteUnusedToolStripMenuItem});
+            this.deleteUnusedToolStripMenuItem,
+            this.splitByChannelToolStripMenuItem,
+            this.splitByNoteToolStripMenuItem,
+            this.importFromProjectToolStripMenuItem1});
             this.patternsToolStripMenuItem.Name = "patternsToolStripMenuItem";
             this.patternsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.patternsToolStripMenuItem.Text = "Patterns";
@@ -282,7 +288,7 @@
             // 
             this.deleteUnusedToolStripMenuItem.Enabled = false;
             this.deleteUnusedToolStripMenuItem.Name = "deleteUnusedToolStripMenuItem";
-            this.deleteUnusedToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.deleteUnusedToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.deleteUnusedToolStripMenuItem.Text = "Delete Unused";
             this.deleteUnusedToolStripMenuItem.Click += new System.EventHandler(this.deleteUnusedToolStripMenuItem_Click);
             // 
@@ -362,7 +368,8 @@
             this.compatibilityToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aSCIIOnlyToolStripMenuItem,
             this.allowUnknownIDsToolStripMenuItem,
-            this.dBGUnlockUnfixedOperationsToolStripMenuItem});
+            this.dBGUnlockUnfixedOperationsToolStripMenuItem,
+            this.enableNullTestslowButSafeToolStripMenuItem});
             this.compatibilityToolStripMenuItem.Name = "compatibilityToolStripMenuItem";
             this.compatibilityToolStripMenuItem.Size = new System.Drawing.Size(91, 20);
             this.compatibilityToolStripMenuItem.Text = "Compatibility";
@@ -389,22 +396,6 @@
             this.dBGUnlockUnfixedOperationsToolStripMenuItem.Text = "DBG: Unlock unfixed Operations";
             this.dBGUnlockUnfixedOperationsToolStripMenuItem.Click += new System.EventHandler(this.dBGUnlockUnfixedOperationsToolStripMenuItem_Click);
             // 
-            // statusStrip
-            // 
-            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
-            this.statusStrip.Location = new System.Drawing.Point(0, 338);
-            this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(753, 22);
-            this.statusStrip.TabIndex = 1;
-            this.statusStrip.Text = "statusStrip1";
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(95, 17);
-            this.toolStripStatusLabel1.Text = "Program loaded.";
-            // 
             // openFileDialog
             // 
             this.openFileDialog.DefaultExt = "*.flp";
@@ -428,7 +419,7 @@
             this.flpPropertyGrid.LineColor = System.Drawing.SystemColors.ControlDark;
             this.flpPropertyGrid.Location = new System.Drawing.Point(0, 0);
             this.flpPropertyGrid.Name = "flpPropertyGrid";
-            this.flpPropertyGrid.Size = new System.Drawing.Size(753, 250);
+            this.flpPropertyGrid.Size = new System.Drawing.Size(489, 390);
             this.flpPropertyGrid.TabIndex = 2;
             this.flpPropertyGrid.ToolbarVisible = false;
             this.flpPropertyGrid.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.flpPropertyGrid_PreviewKeyDown);
@@ -438,7 +429,7 @@
             this.LogOutput.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LogOutput.Location = new System.Drawing.Point(0, 0);
             this.LogOutput.Name = "LogOutput";
-            this.LogOutput.Size = new System.Drawing.Size(753, 60);
+            this.LogOutput.Size = new System.Drawing.Size(489, 96);
             this.LogOutput.TabIndex = 3;
             this.LogOutput.Text = "";
             // 
@@ -456,25 +447,57 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.LogOutput);
-            this.splitContainer1.Size = new System.Drawing.Size(753, 314);
-            this.splitContainer1.SplitterDistance = 250;
+            this.splitContainer1.Size = new System.Drawing.Size(489, 490);
+            this.splitContainer1.SplitterDistance = 390;
             this.splitContainer1.TabIndex = 4;
+            // 
+            // splitByChannelToolStripMenuItem
+            // 
+            this.splitByChannelToolStripMenuItem.Enabled = false;
+            this.splitByChannelToolStripMenuItem.Name = "splitByChannelToolStripMenuItem";
+            this.splitByChannelToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.splitByChannelToolStripMenuItem.Text = "Split by Channel";
+            // 
+            // splitByNoteToolStripMenuItem
+            // 
+            this.splitByNoteToolStripMenuItem.Enabled = false;
+            this.splitByNoteToolStripMenuItem.Name = "splitByNoteToolStripMenuItem";
+            this.splitByNoteToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.splitByNoteToolStripMenuItem.Text = "Split by Note";
+            // 
+            // importFromProjectToolStripMenuItem1
+            // 
+            this.importFromProjectToolStripMenuItem1.Enabled = false;
+            this.importFromProjectToolStripMenuItem1.Name = "importFromProjectToolStripMenuItem1";
+            this.importFromProjectToolStripMenuItem1.Size = new System.Drawing.Size(179, 22);
+            this.importFromProjectToolStripMenuItem1.Text = "Import from Project";
+            // 
+            // mergeWithToolStripMenuItem
+            // 
+            this.mergeWithToolStripMenuItem.Enabled = false;
+            this.mergeWithToolStripMenuItem.Name = "mergeWithToolStripMenuItem";
+            this.mergeWithToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.mergeWithToolStripMenuItem.Text = "Merge with";
+            // 
+            // enableNullTestslowButSafeToolStripMenuItem
+            // 
+            this.enableNullTestslowButSafeToolStripMenuItem.Name = "enableNullTestslowButSafeToolStripMenuItem";
+            this.enableNullTestslowButSafeToolStripMenuItem.Size = new System.Drawing.Size(251, 22);
+            this.enableNullTestslowButSafeToolStripMenuItem.Text = "Null test after load (slow but safe)";
+            this.enableNullTestslowButSafeToolStripMenuItem.Click += new System.EventHandler(this.enableNullTestslowButSafeToolStripMenuItem_Click);
             // 
             // FLPEditForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(753, 360);
+            this.ClientSize = new System.Drawing.Size(489, 514);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.mainMenuStrip);
-            this.Controls.Add(this.statusStrip);
             this.MainMenuStrip = this.mainMenuStrip;
             this.Name = "FLPEditForm";
             this.Text = "FLP Edit";
             this.mainMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.PerformLayout();
-            this.statusStrip.ResumeLayout(false);
-            this.statusStrip.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -494,8 +517,6 @@
         private System.Windows.Forms.ToolStripMenuItem channelsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem playlistToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mixerToolStripMenuItem;
-        private System.Windows.Forms.StatusStrip statusStrip;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveOverToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
@@ -531,6 +552,11 @@
         private System.Windows.Forms.ToolStripMenuItem aSCIIOnlyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allowUnknownIDsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dBGUnlockUnfixedOperationsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mergeWithToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem splitByChannelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem splitByNoteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importFromProjectToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem enableNullTestslowButSafeToolStripMenuItem;
     }
 }
 

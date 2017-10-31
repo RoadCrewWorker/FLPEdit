@@ -95,22 +95,23 @@ namespace FLPFileFormat
     public class PatternNote
     {
         private uint intKey; //Possibly just ushort? FL Only shows 0-131 (C0 to B10)
-        private static string[] note = new string[] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+        public static string[] NoteNames = new string[] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
         [XmlAttribute]
         public string Key
         {
             get
             {
-                return PatternNote.note[intKey % 12] + (intKey / 12).ToString();
+                return PatternNote.NoteNames[intKey % 12] + (intKey / 12).ToString();
             }
             set
             {
                 string n = value.Contains("#") ? value.Substring(0, 2) : value.Substring(0, 1);
-                uint sk = (uint)Array.FindIndex(PatternNote.note, v => v == n);
+                uint sk = (uint)Array.FindIndex(PatternNote.NoteNames, v => v == n);
                 uint octave = uint.Parse(value.Substring(n.Length));
                 this.intKey = octave * 12 + sk;
             }
         }
+        public string KeyNoOctave() { return PatternNote.NoteNames[intKey % 12]; }
 
         [XmlAttribute]
         public ushort RackChannel { get; set; } //Possibly just byte?

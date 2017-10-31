@@ -52,6 +52,7 @@ namespace FLPFileFormat
             ID_Project_APDC = 29,
             ID_Project_TruncateClipNotes = 30,
             ID_Project_EEAutoMode = 31,
+            ID_Project_129_NewUnknown = 35,
 
             ID_Project_FineTempo = FLP_Int + 28,
             ID_Project_MainPitch = FLP_Word + 16,
@@ -291,6 +292,7 @@ namespace FLPFileFormat
         public ushort BeatDivision { get; set; }
         [XmlAttribute]
         public ushort RackChannelCount { get; set; }
+        public byte MAX_MIXERTRACKS = 1+1+125;
 
         public FLP_File()
         {
@@ -351,22 +353,22 @@ namespace FLPFileFormat
                     if(logger!=null) logger.WriteLine((p) + " B = " + next_event.Id);
                     if (next_event != null)
                     {
-                        if (next_event is FLPE_Unicode) { ((FLPE_Unicode)next_event).ParentProject = this; }
+                        next_event.ParentProject = this;
                         next_event.Deserialize(r);
                         this._events.Add(next_event);
                     }
                 }
-                catch (InvalidDataException ivd)
+                catch (InvalidDataException ivd) //If at first we don't succeed...
                 {
                     //Reset the stream
                     if (reporter != null)
                         reporter("Error occured: " + ivd.Message + ". Falling back to generic parsing...");
                     r.BaseStream.Seek(p, SeekOrigin.Begin);
-                    next_event = FLP_Event.FromEventID((FLP_File.EventID)r.ReadByte(), true); // Try again, this time with fallback mode
+                    next_event = FLP_Event.FromEventID((FLP_File.EventID)r.ReadByte(), true); // try try again (this time with fallback mode)
                     if (logger != null) logger.WriteLine((p) + " B = " + next_event.Id);
                     if (next_event != null)
                     {
-                        if (next_event is FLPE_Unicode) { ((FLPE_Unicode)next_event).ParentProject = this; }
+                        next_event.ParentProject = this;
                         next_event.Deserialize(r);
                         this._events.Add(next_event);
                     }
@@ -705,29 +707,97 @@ namespace FLPFileFormat
         public string GetPatternStatistics()
         {
             List<FLP_Event> pattern_inits = GetEventsWithIDs(EventID.ID_Pattern_New);
-            FLP_Event[][] pattern_data = new FLP_Event[1000][];
+            Dictionary<int, FLP_Event[]> pattern_data = new Dictionary<int, FLP_Event[]>();
 
+            //Assemble the pattern information...
             HashSet<EventID> abort = new HashSet<EventID>(new EventID[] { EventID.ID_Pattern_New });
+            long count_notes = 0, count_ctrlevents = 0;
             foreach (FLP_Event pattern_id in pattern_inits)
             {
                 if (!(pattern_id is FLPE_Val)) continue;
-                if (pattern_data[((FLPE_Val)pattern_id).V] == null) pattern_data[((FLPE_Val)pattern_id).V] = new FLP_Event[4];
-                FLPE_Pattern_Note_Events notes = (FLPE_Pattern_Note_Events)this.Seek(pattern_id, EventID.ID_Pattern_Note_Events, true, abort);
-                FLPE_Pattern_Ctrl_Events ctrl_events = (FLPE_Pattern_Ctrl_Events)this.Seek(pattern_id, EventID.ID_Pattern_Ctrl_Events, true, abort);
+                int pid = ((FLPE_Val)pattern_id).V;
+                if (!pattern_data.ContainsKey(pid)) pattern_data[pid] = new FLP_Event[4];
                 FLPE_Unicode name = (FLPE_Unicode)this.Seek(pattern_id, EventID.ID_Pattern_Name, true, abort);
+                if (name != null) pattern_data[pid][0] = name;
                 FLPE_Color color = (FLPE_Color)this.Seek(pattern_id, EventID.ID_Pattern_Color, true, abort);
+                if (color != null) pattern_data[pid][1] = color;
+                FLPE_Pattern_Note_Events notes = (FLPE_Pattern_Note_Events)this.Seek(pattern_id, EventID.ID_Pattern_Note_Events, true, abort);
+                if (notes != null)
+                {
+                    pattern_data[pid][2] = notes;
+                    count_notes += notes.NoteCount;
+                }
+                FLPE_Pattern_Ctrl_Events ctrl_events = (FLPE_Pattern_Ctrl_Events)this.Seek(pattern_id, EventID.ID_Pattern_Ctrl_Events, true, abort);
+                if (ctrl_events != null)
+                {
+                    pattern_data[pid][3] = ctrl_events;
+                    count_ctrlevents += ctrl_events.EventCount;
+                }
             }
 
-            /*
-                total:
-                    pattern count, total note count, avg note count
-                per pattern:
-                    channel count, note count, note histogram (-> key guess?), maximum polyphony
-            */
-            return "Still in development...";
+            string r = "Patterns: " + pattern_data.Count + "\t Total notes: " + count_notes + ", ctrl events:" + count_ctrlevents + "\n";
+            for (int pid = 0; pid < 1000; pid++)
+            {
+                if (!pattern_data.ContainsKey(pid)) continue;
+                //Metadata
+                string p_header= "#" + pid + " " + (pattern_data[pid][0] != null ? ((FLPE_Unicode)pattern_data[pid][0]).Text : "Unnamed") + " ("
+                    + (pattern_data[pid][1] != null ? ((FLPE_Color)pattern_data[pid][1]).HexColor : "Default") + ")";
+                string p_body = "\n";
+                //Note data
+                if(pattern_data[pid][2] == null)
+                {
+                    p_header += ", No Note Data";
+                }
+                else
+                {
+                    FLPE_Pattern_Note_Events notes = (FLPE_Pattern_Note_Events)pattern_data[pid][2];
+                    //How many channels?
+                    ushort[] rackchannels = notes.GetRackChannels();
+                    p_header += ", "+notes.NoteCount+" notes for " + rackchannels.Length + " channel(s)";
+                    foreach(ushort channel in rackchannels)
+                    {
+                        //Note count/histogram per channel
+                        Dictionary<string, List<PatternNote>> histogram = new Dictionary<string, List<PatternNote>>();
+                        int count = 0;
+                        byte vel_min = 128, vel_max = 0;
+                        long vel_sum = 0;
+                        foreach (PatternNote n in notes.Notes)
+                        {
+                            if (n.RackChannel != channel) continue;
+                            string k = n.KeyNoOctave();
+                            if (!histogram.ContainsKey(k)) histogram[k] = new List<PatternNote>();
+                            histogram[k].Add(n);
+                            count++;
+                            if (n.Velocity < vel_min) vel_min = n.Velocity;
+                            if (n.Velocity > vel_max) vel_max = n.Velocity;
+                            vel_sum += n.Velocity;
+                        }
+                        string h = "";
+                        foreach (string k in PatternNote.NoteNames) { if (histogram.ContainsKey(k)) h += " " + k + ":" + histogram[k].Count; }
+                        //Guess key or if sampler
+                        //?Max polyphony
+                        p_body += "\tC" + channel + ": " + count + " notes [" + h + " ] Velocity: [" + vel_min + "," + vel_max + "] avg: " + Math.Round(1.0 * vel_sum / count,2) + "\n";
+                    }
+
+                }
+                //Event data
+                if (pattern_data[pid][3] == null)
+                {
+                    p_header += ", No Ctrl Event Data";
+                }
+                else
+                {
+                    FLPE_Pattern_Ctrl_Events ctrl_events = (FLPE_Pattern_Ctrl_Events)pattern_data[pid][3];
+                    //How many channels? Problem since i don't know the channel/target parameter semantics yet.
+                    p_header += ", " + ctrl_events.EventCount + " ctrl events";
+                    //Channel 
+                }
+                r += p_header + p_body;
+            }
+            return r;
         }
 
-        public string GetMixerStatistics()
+        public string GetRoutingStatistics()
         {
             /*
                 total:

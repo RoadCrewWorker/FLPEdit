@@ -43,8 +43,8 @@ namespace FLPFileFormat
         [DefaultValueAttribute(1)]
         public float Height { get; set; }
         [XmlAttribute]
-        [DefaultValueAttribute(4294967280)]
-        public uint LockedHeight { get; set; }
+        [DefaultValueAttribute(1)]
+        public float LockedHeight { get; set; }
         [XmlAttribute]
         [DefaultValueAttribute(0)]
         public byte LockedToContent { get; set; }
@@ -86,47 +86,69 @@ namespace FLPFileFormat
 
         public override void DeserializeData(int len, BinaryReader r)
         {
-            this.TrackNumber = r.ReadUInt32(); //4
-            this.rgba = r.ReadInt32(); //8
-            this.Icon = r.ReadInt32(); //12
-            this.Enabled = r.ReadByte(); //13
-            this.Height = r.ReadSingle(); //17
-            this.LockedHeight = r.ReadUInt32(); //21
-            this.LockedToContent = r.ReadByte(); //22
-            this.pMotion = r.ReadInt32(); //26
-            this.pPress = r.ReadInt32(); //30
-            this.pTriggerSync = r.ReadInt32(); //34
-            this.pQueued = r.ReadInt32(); //38
-            this.pTolerant = r.ReadInt32(); //42
-            this.pPositionSync = r.ReadInt32(); //46    
-            this.GroupedWithAbove = r.ReadByte(); //1
+            //Theres also a version with 16 bytes.
+            if (this.my_data_len >= 16)
+            {
+                if (this.my_data_len >= 22)
+                {
+                    this.TrackNumber = r.ReadUInt32(); //4
+                    this.rgba = r.ReadInt32(); //8
+                    this.Icon = r.ReadInt32(); //12
+                    this.Enabled = r.ReadByte(); //13
+                    this.Height = r.ReadSingle(); //17
+                    this.LockedHeight = r.ReadSingle(); //21
+                    this.LockedToContent = r.ReadByte(); //22
+                    if (this.my_data_len >= 47)
+                    {
+                        this.pMotion = r.ReadInt32(); //26
+                        this.pPress = r.ReadInt32(); //30
+                        this.pTriggerSync = r.ReadInt32(); //34
+                        this.pQueued = r.ReadInt32(); //38
+                        this.pTolerant = r.ReadInt32(); //42
+                        this.pPositionSync = r.ReadInt32(); //46    
+                        this.GroupedWithAbove = r.ReadByte(); //1
+                        if (this.my_data_len >= 49)
+                        {
+                            this.U1 = r.ReadByte(); //1
+                            this.U2 = r.ReadByte(); //1
+                        }
+                    }
+                }
+            }
             //These are the most recent extension, probably Mute lock related.
-            this.U1 = r.ReadByte(); //1
-            this.U2 = r.ReadByte(); //1
         }
 
         public override void SerializeData(BinaryWriter w)
         {
-            w.Write(this.TrackNumber);
-            w.Write(this.rgba);
-            w.Write(this.Icon);
-            w.Write(this.Enabled);
-            w.Write(this.Height);
-            w.Write(this.LockedHeight);
-            w.Write(this.LockedToContent);
-            w.Write(this.pMotion);
-            w.Write(this.pPress);
-            w.Write(this.pTriggerSync);
-            w.Write(this.pQueued);
-            w.Write(this.pTolerant);
-            w.Write(this.pPositionSync);
-            w.Write(this.GroupedWithAbove);
-            w.Write(this.U1);
-            w.Write(this.U2);
+            if (this.my_data_len >= 22)
+            {
+                w.Write(this.TrackNumber);
+                w.Write(this.rgba);
+                w.Write(this.Icon);
+                w.Write(this.Enabled);
+                w.Write(this.Height);
+                w.Write(this.LockedHeight);
+                w.Write(this.LockedToContent);
+                if (this.my_data_len >= 47)
+                {
+                    w.Write(this.pMotion);
+                    w.Write(this.pPress);
+                    w.Write(this.pTriggerSync);
+                    w.Write(this.pQueued);
+                    w.Write(this.pTolerant);
+                    w.Write(this.pPositionSync);
+                    w.Write(this.GroupedWithAbove);
+                    if (this.my_data_len >= 49)
+                    {
+                        w.Write(this.U1);
+                        w.Write(this.U2);
+                    }
+                }
+            }
         }
         public override bool IsDefault()
         { //TODO: Default Color!
-            return Icon == 0 && Enabled == 1 && Height == 1 && LockedHeight == 4294967280 && LockedToContent == 0 && pMotion == 0 && pPress == 0 && pTriggerSync == 5 && pQueued == 0 && pTolerant == 1 && pPositionSync == 0 && U1 == 0 && U2 == 0;
+            return Icon == 0 && Enabled == 1 && Height == 1 && LockedHeight == float.NaN && LockedToContent == 0 && pMotion == 0 && pPress == 0 && pTriggerSync == 5 && pQueued == 0 && pTolerant == 1 && pPositionSync == 0 && U1 == 0 && U2 == 0;
         }
     }
 }

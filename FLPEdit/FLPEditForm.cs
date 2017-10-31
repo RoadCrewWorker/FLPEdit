@@ -51,18 +51,24 @@ namespace FLPEdit
             if (filename.EndsWith(".flp"))
             {
                 FLP_File loaded = new FLP_File(filename, loggy, delegate (string msg) { LogStatusMessage(msg); });
-                LogStatusMessage("Performing null test...");
-                long error_pos = loaded.PerformNullTest(filename);
-                if (error_pos == -1)
+                if (enableNullTestslowButSafeToolStripMenuItem.Checked)
                 {
-                    LogStatusMessage("Null test succeeded.");
-                    return loaded;
+                    LogStatusMessage("Performing null test...");
+                    long error_pos = loaded.PerformNullTest(filename);
+                    if (error_pos == -1)
+                    {
+                        LogStatusMessage("Null test succeeded.");
+                        return loaded;
+                    }
+                    else
+                    {
+                        LogStatusMessage("Null test failed at byte: " + error_pos + ". This usually implies incorrect encoding, incompatible file format or corrupt data. Proceed at your own risk.");
+                        return loaded;
+                        //throw new InvalidDataException("Unable to confirm null test at position" + error_pos);
+                    }
                 }
-                else
-                {
-                    LogStatusMessage("Null test failed at byte: "+error_pos+". This usually implies incorrect encoding, incompatible file format or corrupt data. Proceed at your own risk.");
+                else {
                     return loaded;
-                    //throw new InvalidDataException("Unable to confirm null test at position" + error_pos);
                 }
             }
             else if (filename.EndsWith(".fst"))
@@ -294,7 +300,7 @@ namespace FLPEdit
 
         private void showMixerStatisticsToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            this.LogOutput.Text += "\n" + CurrentFLPFile.GetMixerEvents();
+            this.LogOutput.Text += "\n" + CurrentFLPFile.GetRoutingStatistics();
         }
 
         private void showPatternsStatisticsToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -341,6 +347,11 @@ namespace FLPEdit
         private void sourceChannelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CurrentFLPFile.NormalizePlaylistBySource(true);
+        }
+
+        private void enableNullTestslowButSafeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            enableNullTestslowButSafeToolStripMenuItem.Checked = !enableNullTestslowButSafeToolStripMenuItem.Checked;
         }
     }
 }

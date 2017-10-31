@@ -35,6 +35,9 @@ namespace FLPFileFormat
         [DefaultValueAttribute(0)]
         public int U1 { get; set; }
         [XmlAttribute]
+        [DefaultValueAttribute(0)]
+        public int U2 { get; set; }
+        [XmlAttribute]
         public MixerTrackFlags Flags { get; set; }
 
         public override string ToString()
@@ -44,14 +47,28 @@ namespace FLPFileFormat
 
         public override void DeserializeData(int len, BinaryReader r)
         {
-            this.U1 = r.ReadInt32();
-            this.Flags = (MixerTrackFlags)r.ReadUInt32();
+            if (this.my_data_len >= 8)
+            {
+                this.U1 = r.ReadInt32();
+                this.Flags = (MixerTrackFlags)r.ReadUInt32();
+                if (this.my_data_len >= 12)
+                {
+                    this.U2 = r.ReadInt32();
+                }
+            }
         }
 
         public override void SerializeData(BinaryWriter w)
         {
-            w.Write(this.U1);
-            w.Write((uint)this.Flags);
+            if (this.my_data_len >= 8)
+            {
+                w.Write(this.U1);
+                w.Write((uint)this.Flags);
+                if (this.my_data_len >= 12)
+                {
+                    w.Write(this.U2);
+                }
+            }
         }
         public override bool IsDefault()
         {

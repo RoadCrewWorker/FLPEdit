@@ -13,8 +13,6 @@ namespace FLPFileFormat
     [Serializable]
     public class FLPE_Unicode : FLPE_Data
     {
-        //Global modifer to avoid Unicode if nessecary.
-        public FLP_File ParentProject;
 
         //Enum members just used for ID matching, labels are not used.
         public enum ValidIDs : byte
@@ -61,7 +59,12 @@ namespace FLPFileFormat
                 this.Text = Encoding.ASCII.GetString(r.ReadBytes(len)).Trim('\0');
                 if (this.ParentProject != null)
                 {
-                    this.ParentProject.UsesUnicodeStrings = this.Text.StartsWith("11.5") || this.Text.StartsWith("12."); //god i hate version number parsing so much
+                    float version = 0;
+                    string t = this.Text.Substring(0, 4);
+                    if (float.TryParse(t,out version)){ //try parsing the major and minor version
+                        this.ParentProject.UsesUnicodeStrings = version >= 11.5f;
+                        this.ParentProject.MAX_MIXERTRACKS = (byte)(1 + 1 + (version >= 12.89f ? 125 : 104));
+                    }
                 }
             }
             else {

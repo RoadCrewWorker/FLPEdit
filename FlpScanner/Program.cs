@@ -16,6 +16,7 @@ namespace FLPXML
 
         static void Main(string[] args)
         {
+            bool verbose = false;
             if (args.Length < 1)
             {
                 Console.WriteLine("Usage: FLP-XML.exe <FLP, XML or Dir> [action, action, action ...] \nwhere action:"
@@ -57,7 +58,7 @@ namespace FLPXML
                     }
                     else
                     {
-                        Log(fn + " has incorrect extension. Skipping...");
+                        if(verbose) Log(fn + " has incorrect extension. Skipping...");
                     }
                 }
             }
@@ -91,14 +92,15 @@ namespace FLPXML
                     FLPE_Val bpm = ((FLPE_Val)f.Seek(null, FLP_File.EventID.ID_Project_FineTempo));
                     FLPE_Project_Time ptime = (FLPE_Project_Time)f.Seek(null, FLP_File.EventID.ID_Project_Time);
 
-                    Log(Path.GetFileNameWithoutExtension(filename) + " | " 
-                        + (flversion==null?"":flversion.Text) + " | "
-                        + (author == null ? "Missing" : author.Text) + " | "
-                        + (regname == null ? "Missing" : regname.Text) + " | "
-                        + (title == null ? "Missing" : title.Text) + " | "
-                        + (bpm == null ? "Missing" : bpm.V+"Bpm") + " | "
-                        + (ptime == null ? "Missing | Missing" : ptime.StartDate+" | "+ptime.WorkTime) + " | "
-                        + f.EventCount);
+                    Log(
+                        (ptime == null ? "Missing |\t Missing" : ptime.StartDate + " |\t " + ptime.WorkTime) + " |\t "
+                        + (bpm == null ? "Missing" : bpm.V + "Bpm") + " |\t "
+                        + (flversion == null ? "" : flversion.Text) + " |\t "
+                        + f.EventCount + " |\t "
+                        + Path.GetFileNameWithoutExtension(filename) + " |\t "
+                        + (title == null ? "Missing" : title.Text) + " |\t "
+                        + (author == null ? "Missing" : author.Text) + " |\t "
+                        + (regname == null ? "Missing" : regname.Text) + "");
                 }
                 if (cmd == "-rup")
                 {

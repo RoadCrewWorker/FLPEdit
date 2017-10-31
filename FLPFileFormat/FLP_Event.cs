@@ -19,6 +19,7 @@ namespace FLPFileFormat
         [ReadOnlyAttribute(true)]
         public FLP_File.EventID Id { get; set; }
 
+        public FLP_File ParentProject { get; set; }
         //Rekursive Factory Method
         public static FLP_Event FromEventID(FLP_File.EventID id, bool use_fallback = false)
         {

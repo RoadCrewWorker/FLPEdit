@@ -60,7 +60,7 @@ namespace FLPFileFormat
             for (int note = 0; note < notecount; note++)
             {
                 InitEvent n = new InitEvent();
-                n.Deserialize(r);
+                n.Deserialize(r, this.ParentProject.MAX_MIXERTRACKS);
                 this._initEvents.Add(n);
             }
         }
@@ -134,7 +134,7 @@ namespace FLPFileFormat
         [XmlAttribute]
         public int V { get; set; }
 
-        public void Deserialize(BinaryReader r)
+        public void Deserialize(BinaryReader r, int count_mixertracks)
         {
             this.U1_0 = r.ReadUInt32();
             //if (U1_0 != 0) throw new InvalidDataException(this.U1_0 + " should be 0 but isn't.");
@@ -144,7 +144,7 @@ namespace FLPFileFormat
                 this.Par = (InitEvent.InitParameter)p;
                 this.SendOffset = 0;
             }
-            else if (p >= (byte)InitParameter.SendLevelToTrack && p <= (byte)InitParameter.SendLevelToTrack + 104)
+            else if (p >= (byte)InitParameter.SendLevelToTrack && p <= (byte)InitParameter.SendLevelToTrack + count_mixertracks)
             {
                 this.Par = InitParameter.SendLevelToTrack;
                 this.SendOffset = (byte)(p - (byte)InitParameter.SendLevelToTrack);

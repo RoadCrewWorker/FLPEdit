@@ -11,7 +11,7 @@ namespace FLPFileFormat
     [Serializable]
     public abstract class FLPE_Data : FLP_Event
     {
-
+        protected int my_data_len;
         //Rekursive Factory Method, propagates to further subclasses depending on ID
         public static new FLP_Event FromEventID(FLP_File.EventID id,bool use_fallback=false)
         {
@@ -64,6 +64,7 @@ namespace FLPFileFormat
             }
             while ((b & 0x80) != 0);
             long pos_r1 = r.BaseStream.Position;
+            this.my_data_len = data_len;
             this.DeserializeData(data_len, r);
             //Confirm we fully deserialized the data:
             long pos_r2 = r.BaseStream.Position;
